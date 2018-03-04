@@ -1,9 +1,8 @@
-﻿using System.Linq.Expressions;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Asteroids
 {
-	public class GameManager : MonoBehaviour
+	public class AsteroidSpawner : MonoBehaviour
 	{
 		public GameObject asteroidPrefab;
 		public int numOfRoidsToSpawn = 10;
