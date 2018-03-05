@@ -30,5 +30,10 @@ namespace Asteroids
 
 			scoreText.text = "Score: " + currentScore;
 		}
+
+		public void OnShipCollision()
+		{
+			StopScore();
+		}
 	}
 }

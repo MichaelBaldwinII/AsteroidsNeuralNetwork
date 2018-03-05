@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Asteroids
 {
@@ -14,6 +15,16 @@ namespace Asteroids
 
 		private void Awake()
 		{
+			Restart();
+		}
+
+		public void Restart()
+		{
+			foreach(var iRoid in FindObjectsOfType<Asteroid>())
+			{
+				Destroy(iRoid.gameObject);
+			}
+
 			for(int i = 0; i < numOfRoidsToSpawn; i++)
 			{
 				Vector3 startPos = Camera.main.ViewportToWorldPoint(new Vector3(Random.value, Random.value));

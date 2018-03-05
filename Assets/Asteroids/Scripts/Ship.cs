@@ -13,13 +13,7 @@ namespace Asteroids
 		private float lastShotTime;
 		private bool isWrappingOnX;
 		private bool isWrappingOnY;
-		private ScoreManager scoreManager;
-
-		private void Awake()
-		{
-			scoreManager = FindObjectOfType<ScoreManager>();
-			scoreManager.StartScore();
-		}
+		private Vector3 lastPos;
 
 		private void Update()
 		{
@@ -27,16 +21,37 @@ namespace Asteroids
 			{
 				float verticalInput = Input.GetAxis("Vertical");
 				float horizontalInput = Input.GetAxis("Horizontal");
-				thrustGobject.SetActive(!Mathf.Approximately(verticalInput, 0));
+				//thrustGobject.SetActive(!Mathf.Approximately(verticalInput, 0));
 				transform.Translate(transform.up * moveSpeed * verticalInput * Time.deltaTime, Space.World);
 				transform.Rotate(0, 0, rotationSpeed * -horizontalInput * Time.deltaTime);
 
-				if(Input.GetButton("Fire1") && Time.time - lastShotTime >= reloadSpeed)
+				if(Input.GetButton("Fire1"))
 				{
-					GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-					bullet.GetComponent<Rigidbody2D>().AddForce(transform.up * 300);
-					lastShotTime = Time.time;
+					Fire();
 				}
+			}
+
+			thrustGobject.SetActive(!transform.position.Equals(lastPos));
+			lastPos = transform.position;
+		}
+
+		public void Thrust()
+		{
+			transform.Translate(transform.up * moveSpeed * Time.deltaTime, Space.World);
+		}
+
+		public void Rotate(bool inPosDir)
+		{
+			transform.Rotate(0, 0, rotationSpeed * (inPosDir ? 1 : -1) * Time.deltaTime, Space.World);
+		}
+
+		public void Fire()
+		{
+			if(Time.time - lastShotTime >= reloadSpeed)
+			{
+				GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+				bullet.GetComponent<Rigidbody2D>().AddForce(transform.up * 300);
+				lastShotTime = Time.time;
 			}
 		}
 
@@ -66,8 +81,15 @@ namespace Asteroids
 		private void OnCollisionEnter2D(Collision2D other)
 		{
 			//Ship destroyed, so game ended
-			Destroy(gameObject);
-			scoreManager.StopScore();
+			//Destroy(gameObject);
+			FindObjectOfType<GenManager>().OnShipCollision();
+		}
+
+		public void ResetPos()
+		{
+			transform.position = Vector3.zero;
+			isWrappingOnX = false;
+			isWrappingOnY = false;
 		}
 	}
 }
