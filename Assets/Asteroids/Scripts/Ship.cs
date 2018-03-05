@@ -5,37 +5,45 @@ namespace Asteroids
 	public class Ship : MonoBehaviour
 	{
 		public bool isPlayer;
-		public float moveSpeed = 1.0f;
-		public float rotationSpeed = 1.0f;
 		public GameObject thrustGobject;
 		public GameObject bulletPrefab;
+		public float moveSpeed = 3.0f;
+		public float rotationSpeed = 100.0f;
+		public float reloadSpeed = 1.0f;
+		private float lastShotTime;
 		private bool isWrappingOnX;
 		private bool isWrappingOnY;
+		private ScoreManager scoreManager;
 
-		private void Update()
+		private void Awake()
 		{
-			float verticalInput = Input.GetAxis("Vertical");
-			thrustGobject.SetActive(!Mathf.Approximately(verticalInput, 0));
-
-			if(Input.GetButtonDown("Fire1"))
-			{
-				GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-				bullet.GetComponent<Rigidbody2D>().AddForce(transform.up * 300);
-			}
+			scoreManager = FindObjectOfType<ScoreManager>();
+			scoreManager.StartScore();
 		}
 
-		private void FixedUpdate()
+		private void Update()
 		{
 			if(isPlayer)
 			{
 				float verticalInput = Input.GetAxis("Vertical");
 				float horizontalInput = Input.GetAxis("Horizontal");
+				thrustGobject.SetActive(!Mathf.Approximately(verticalInput, 0));
+				transform.Translate(transform.up * moveSpeed * verticalInput * Time.deltaTime, Space.World);
+				transform.Rotate(0, 0, rotationSpeed * -horizontalInput * Time.deltaTime);
 
-				GetComponent<Rigidbody2D>().AddTorque(-horizontalInput * rotationSpeed);
-				GetComponent<Rigidbody2D>().AddForce(transform.up * verticalInput * moveSpeed);
-				//transform.up  = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-				//transform.Translate(transform.up * moveSpeed * verticalInput);
+				if(Input.GetButton("Fire1") && Time.time - lastShotTime >= reloadSpeed)
+				{
+					GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+					bullet.GetComponent<Rigidbody2D>().AddForce(transform.up * 300);
+					lastShotTime = Time.time;
+				}
 			}
+		}
+
+		private void OnBecameVisible()
+		{
+			isWrappingOnX = false;
+			isWrappingOnY = false;
 		}
 
 		private void OnBecameInvisible()
@@ -53,6 +61,13 @@ namespace Asteroids
 				transform.position = new Vector2(transform.position.x, -transform.position.y);
 				isWrappingOnY = true;
 			}
+		}
+
+		private void OnCollisionEnter2D(Collision2D other)
+		{
+			//Ship destroyed, so game ended
+			Destroy(gameObject);
+			scoreManager.StopScore();
 		}
 	}
 }

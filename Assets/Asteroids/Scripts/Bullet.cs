@@ -13,6 +13,12 @@ namespace Asteroids
 			Destroy(gameObject, lifeSpan);
 		}
 
+		private void OnBecameVisible()
+		{
+			isWrappingOnX = false;
+			isWrappingOnY = false;
+		}
+
 		private void OnBecameInvisible()
 		{
 			Vector2 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
@@ -28,6 +34,11 @@ namespace Asteroids
 				transform.position = new Vector2(transform.position.x, -transform.position.y);
 				isWrappingOnY = true;
 			}
+		}
+
+		private void OnCollisionEnter2D(Collision2D other)
+		{
+			Destroy(gameObject);
 		}
 	}
 }

@@ -4,15 +4,16 @@ namespace Asteroids
 {
 	public class Asteroid : MonoBehaviour
 	{
+		public AsteroidSize size;
 		private bool isWrappingOnX;
 		private bool isWrappingOnY;
+		private AsteroidSpawner spawner;
+		private ScoreManager scoreManager;
 
-		private void Start()
+		private void Awake()
 		{
-			Vector3 startPos = Camera.main.ViewportToWorldPoint(new Vector3(Random.value, Random.value));
-			transform.position = startPos;
-			GetComponent<Rigidbody2D>().AddForce(Random.insideUnitCircle.normalized * 50);
-			GetComponent<Rigidbody2D>().AddTorque(3);
+			spawner = FindObjectOfType<AsteroidSpawner>();
+			scoreManager = FindObjectOfType<ScoreManager>();
 		}
 
 		private void OnBecameInvisible()
@@ -36,6 +37,42 @@ namespace Asteroids
 		{
 			isWrappingOnX = false;
 			isWrappingOnY = false;
+		}
+
+		private void OnCollisionEnter2D(Collision2D other)
+		{
+			//We split into two smaller asteroids of the next size down
+			switch(size)
+			{
+				case AsteroidSize.LARGE:
+					spawner.Spawn(transform.position, AsteroidSize.MEDIUM);
+					spawner.Spawn(transform.position, AsteroidSize.MEDIUM);
+					Destroy(gameObject);
+					scoreManager.currentScore += 50;
+					break;
+				case AsteroidSize.MEDIUM:
+					spawner.Spawn(transform.position, AsteroidSize.NORMAL);
+					spawner.Spawn(transform.position, AsteroidSize.NORMAL);
+					Destroy(gameObject);
+					scoreManager.currentScore += 40;
+					break;
+				case AsteroidSize.NORMAL:
+					spawner.Spawn(transform.position, AsteroidSize.SMALL);
+					spawner.Spawn(transform.position, AsteroidSize.SMALL);
+					Destroy(gameObject);
+					scoreManager.currentScore += 30;
+					break;
+				case AsteroidSize.SMALL:
+					spawner.Spawn(transform.position, AsteroidSize.TINY);
+					spawner.Spawn(transform.position, AsteroidSize.TINY);
+					Destroy(gameObject);
+					scoreManager.currentScore += 20;
+					break;
+				case AsteroidSize.TINY: //If tiny size, then we just disappear
+					Destroy(gameObject);
+					scoreManager.currentScore += 10;
+					break;
+			}
 		}
 	}
 }
