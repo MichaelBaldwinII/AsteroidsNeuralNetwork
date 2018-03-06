@@ -10,13 +10,14 @@ namespace Asteroids
 	{
 		[Header("Neural Network Config")]
 		public int numOfInputs = 16;
-		public int numOfHiddenLayers = 2;
 		public int numOfNodesPerHiddenLayer = 16;
 		public int numOfOutputs = 4;
+		public float mutationPercent = 0.05f;
 		public ComputerPlayer comPlayer;
 
 		[Header("Gen Control")]
 		public int numPerGen = 10;
+		public float timeBetweenInadequencyChecks = 5.0f;
 		private int currentGenNumber;
 		private readonly List<NeuralNetwork> neuralNetworks = new List<NeuralNetwork>();
 
@@ -41,14 +42,14 @@ namespace Asteroids
 			//Populate the first generation
 			for(int i = 0; i < numPerGen; i++)
 			{
-				neuralNetworks.Add(new NeuralNetwork(numOfInputs, numOfHiddenLayers, numOfNodesPerHiddenLayer, numOfOutputs));
+				neuralNetworks.Add(new NeuralNetwork(numOfInputs, numOfNodesPerHiddenLayer, numOfOutputs));
 			}
 			ScoreManager.Instance.RestartScore();
 		}
 
 		private void Update()
 		{
-			if(Time.time - lastTimeCheck > 5f)
+			if(Time.time - lastTimeCheck > timeBetweenInadequencyChecks)
 			{
 				if(Mathf.Approximately(ScoreManager.Instance.currentScore, lastScore))
 				{
@@ -86,13 +87,17 @@ namespace Asteroids
 				//Debug.Log("we have reached the end of the first gen.");
 				neuralNetworks.Sort();
 				neuralNetworks.Reverse();
-				lastGenWinner.SaveToFile("Gen" + currentGenNumber + "Winner_F:" + lastGenWinner.fitness);
+				if(lastGenWinner != null)
+				{
+					NeuralNetwork.SaveToFile(lastGenWinner, "Gen_" + currentGenNumber + "_Winner_" + lastGenWinner.fitness);
+				}
 				lastGenWinner = neuralNetworks[0];
 				//Pop new gen using old gen winner
 				neuralNetworks.Clear();
 				for(int i = 0; i < numPerGen; i++)
 				{
 					neuralNetworks.Add(new NeuralNetwork(lastGenWinner));
+					neuralNetworks[i].Mutate(mutationPercent);
 				}
 				index = 0;
 				currentGenNumber++;
@@ -112,7 +117,7 @@ namespace Asteroids
 
 		public void SaveLatestWinner()
 		{
-			lastGenWinner.SaveToFile("LatestWinner:" + lastGenWinner.fitness);
+			NeuralNetwork.SaveToFile(lastGenWinner, "LatestWinner_" + lastGenWinner.fitness);
 		}
 	}
 }

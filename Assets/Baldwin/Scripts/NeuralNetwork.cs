@@ -17,9 +17,19 @@ namespace Baldwin
 		public readonly Matrix hiddenToOutput;
 		public float fitness;
 
-		public NeuralNetwork(int numOfInputs, int numOfHiddenLayers, int numOfHiddenNodesPerlayer, int numOfOutputs)
+		public NeuralNetwork()
 		{
-			//Add 1 to store the bias
+			inputToHidden = new Matrix(0, 0);
+			inputBias = new Matrix(0, 0);
+			hiddenToHidden = new Matrix(0, 0);
+			hiddenBias = new Matrix(0, 0);
+			outputBias = new Matrix(0, 0);
+			hiddenToOutput = new Matrix(0, 0);
+			fitness = 0;
+		}
+
+		public NeuralNetwork(int numOfInputs, int numOfHiddenNodesPerlayer, int numOfOutputs)
+		{
 			inputToHidden = new Matrix(numOfHiddenNodesPerlayer, numOfInputs);
 			inputBias = new Matrix(numOfInputs, 1);
 			hiddenToHidden = new Matrix(numOfHiddenNodesPerlayer, numOfHiddenNodesPerlayer);
@@ -44,12 +54,6 @@ namespace Baldwin
 			outputBias = new Matrix(neuralNetwork.outputBias);
 			hiddenToOutput = new Matrix(neuralNetwork.hiddenToOutput);
 			fitness = 0;
-			inputToHidden.Mutate(0.05f);
-			inputBias.Mutate(0.05f);
-			hiddenToHidden.Mutate(0.05f);
-			hiddenBias.Mutate(0.05f);
-			outputBias.Mutate(0.05f);
-			hiddenToOutput.Mutate(0.05f);
 		}
 
 		public List<float> Process(List<float> inputValues)
@@ -76,22 +80,36 @@ namespace Baldwin
 			return 0;
 		}
 
-		public void SaveToFile(string fileName)
+		/// <summary>
+		/// Mutate this NeuralNetworks matrix values based upon a small mutation percentange.
+		/// </summary>
+		public void Mutate(float mutationPercent)
+		{
+			inputToHidden.Mutate(mutationPercent);
+			inputBias.Mutate(mutationPercent);
+			hiddenToHidden.Mutate(mutationPercent);
+			hiddenBias.Mutate(mutationPercent);
+			outputBias.Mutate(mutationPercent);
+			hiddenToOutput.Mutate(mutationPercent);
+		}
+
+		public static void SaveToFile(NeuralNetwork network, string fileName)
 		{
 			string destination = Application.persistentDataPath + "/" + fileName + ".NN";
-			FileStream file;
-			if(File.Exists(destination))
-			{
-				file = File.OpenWrite(destination);
-			}
-			else
-			{
-				file = File.Create(destination);
-			}
-
+			FileStream file = File.Exists(destination) ? File.OpenWrite(destination) : File.Create(destination);
 			BinaryFormatter bf = new BinaryFormatter();
-			bf.Serialize(file, this);
+			bf.Serialize(file, network);
 			file.Close();
+		}
+
+		public static NeuralNetwork LoadFromFile(string fileName)
+		{
+			string destination = Application.persistentDataPath + "/" + fileName + ".NN";
+			FileStream file = File.Exists(destination) ? File.OpenRead(destination) : File.Create(destination);
+			BinaryFormatter bf = new BinaryFormatter();
+			NeuralNetwork result = (NeuralNetwork)bf.Deserialize(file);
+			file.Close();
+			return result;
 		}
 	}
 }

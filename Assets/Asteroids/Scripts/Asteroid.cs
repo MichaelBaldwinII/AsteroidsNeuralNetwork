@@ -34,13 +34,13 @@ namespace Asteroids
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.MEDIUM);
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.MEDIUM);
 					Destroy(gameObject);
-					ScoreManager.Instance.currentScore += 50;
+					ScoreManager.Instance.currentScore += 10;
 					break;
 				case AsteroidSize.MEDIUM:
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.NORMAL);
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.NORMAL);
 					Destroy(gameObject);
-					ScoreManager.Instance.currentScore += 40;
+					ScoreManager.Instance.currentScore += 20;
 					break;
 				case AsteroidSize.NORMAL:
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.SMALL);
@@ -52,11 +52,11 @@ namespace Asteroids
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.TINY);
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.TINY);
 					Destroy(gameObject);
-					ScoreManager.Instance.currentScore += 20;
+					ScoreManager.Instance.currentScore += 40;
 					break;
 				case AsteroidSize.TINY: //If tiny size, then we just disappear
 					Destroy(gameObject);
-					ScoreManager.Instance.currentScore += 10;
+					ScoreManager.Instance.currentScore += 50;
 					break;
 			}
 		}
