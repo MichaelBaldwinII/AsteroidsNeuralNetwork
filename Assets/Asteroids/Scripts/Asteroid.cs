@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Baldwin.AI;
+using UnityEngine;
 
 namespace Asteroids
 {
@@ -34,29 +35,29 @@ namespace Asteroids
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.MEDIUM);
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.MEDIUM);
 					Destroy(gameObject);
-					ScoreManager.Instance.currentScore += 10;
+					GenManager.Instance.AddFitness(10);
 					break;
 				case AsteroidSize.MEDIUM:
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.NORMAL);
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.NORMAL);
 					Destroy(gameObject);
-					ScoreManager.Instance.currentScore += 20;
+					GenManager.Instance.AddFitness(20);
 					break;
 				case AsteroidSize.NORMAL:
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.SMALL);
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.SMALL);
 					Destroy(gameObject);
-					ScoreManager.Instance.currentScore += 30;
+					GenManager.Instance.AddFitness(30);
 					break;
 				case AsteroidSize.SMALL:
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.TINY);
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.TINY);
 					Destroy(gameObject);
-					ScoreManager.Instance.currentScore += 40;
+					GenManager.Instance.AddFitness(40);
 					break;
 				case AsteroidSize.TINY: //If tiny size, then we just disappear
 					Destroy(gameObject);
-					ScoreManager.Instance.currentScore += 50;
+					GenManager.Instance.AddFitness(50);
 					break;
 			}
 		}

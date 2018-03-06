@@ -1,11 +1,15 @@
-﻿using UnityEngine;
+﻿using Baldwin.AI;
+using UnityEngine;
 
 namespace Asteroids
 {
 	public class Ship : MonoBehaviour
 	{
-		public GameObject thrustGobject;
+		[Header("Prefabs & Refs")]
 		public GameObject bulletPrefab;
+		public GameObject thrustGobject;
+
+		[Header("Config")]
 		public float moveSpeed = 3.0f;
 		public float rotationSpeed = 100.0f;
 		public float reloadSpeed = 1.0f;

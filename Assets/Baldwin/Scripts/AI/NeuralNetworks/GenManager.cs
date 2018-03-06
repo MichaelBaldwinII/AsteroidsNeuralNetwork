@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Baldwin;
+using Asteroids;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Asteroids
+namespace Baldwin.AI
 {
 	public class GenManager : Singleton<GenManager>
 	{
@@ -18,6 +18,7 @@ namespace Asteroids
 		[Header("Gen Control")]
 		public int numPerGen = 10;
 		public float timeBetweenInadequencyChecks = 5.0f;
+		private float currentScore;
 		private int currentGenNumber;
 		private readonly List<NeuralNetwork> neuralNetworks = new List<NeuralNetwork>();
 
@@ -32,6 +33,11 @@ namespace Asteroids
 		private float lastTimeCheck;
 		private float lastScore;
 
+		public void AddFitness(float amount)
+		{
+			currentScore += amount;
+		}
+
 		private void Start()
 		{
 			currentGenNumber = 1;
@@ -44,14 +50,15 @@ namespace Asteroids
 			{
 				neuralNetworks.Add(new NeuralNetwork(numOfInputs, numOfNodesPerHiddenLayer, numOfOutputs));
 			}
-			ScoreManager.Instance.RestartScore();
+
+			currentScore = 0;
 		}
 
 		private void Update()
 		{
 			if(Time.time - lastTimeCheck > timeBetweenInadequencyChecks)
 			{
-				if(Mathf.Approximately(ScoreManager.Instance.currentScore, lastScore))
+				if(Mathf.Approximately(currentScore, lastScore))
 				{
 					//Ship is just sitting still we need to remove it
 					Next();
@@ -60,7 +67,7 @@ namespace Asteroids
 				lastScore = 0;
 			}
 
-			neuralNetworks[index].fitness = ScoreManager.Instance.currentScore;
+			neuralNetworks[index].fitness = currentScore;
 			comPlayer.brain = neuralNetworks[index];
 
 			currentRunText.text = (index + 1) + ": " + neuralNetworks[index].fitness;
@@ -70,7 +77,7 @@ namespace Asteroids
 		public void Next()
 		{
 			AsteroidSpawner.Instance.Restart();
-			ScoreManager.Instance.RestartScore();
+			currentScore = 0;
 			index++;
 			FindObjectOfType<Ship>().transform.position = Vector3.zero;
 			lastTimeCheck = Time.time;

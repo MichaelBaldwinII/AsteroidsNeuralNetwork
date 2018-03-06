@@ -303,24 +303,12 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 63213667}
---- !u!1 &67528613 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1233186787714554, guid: 0e65586497d947745b6757ee29569396,
+--- !u!114 &67528619 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114873515902276968, guid: 0e65586497d947745b6757ee29569396,
     type: 2}
   m_PrefabInternal: {fileID: 1157247209}
---- !u!114 &67528619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 67528613}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5e337b16cbe84db98c44568392913d63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  brain:
-    fitness: 0
 --- !u!1 &117779036
 GameObject:
   m_ObjectHideFlags: 0
@@ -654,32 +642,6 @@ Prefab:
     - target: {fileID: 4012345029897040, guid: 0e65586497d947745b6757ee29569396, type: 2}
       propertyPath: m_RootOrder
       value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114711771411859778, guid: 0e65586497d947745b6757ee29569396,
-        type: 2}
-      propertyPath: bulletPrefab
-      value: 
-      objectReference: {fileID: 1155167475438872, guid: 06ef10e6aee3ebe4295415e690ff9365,
-        type: 2}
-    - target: {fileID: 50648869718940802, guid: 0e65586497d947745b6757ee29569396,
-        type: 2}
-      propertyPath: m_BodyType
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114711771411859778, guid: 0e65586497d947745b6757ee29569396,
-        type: 2}
-      propertyPath: moveSpeed
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 114711771411859778, guid: 0e65586497d947745b6757ee29569396,
-        type: 2}
-      propertyPath: rotationSpeed
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 114711771411859778, guid: 0e65586497d947745b6757ee29569396,
-        type: 2}
-      propertyPath: isPlayer
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e65586497d947745b6757ee29569396, type: 2}
@@ -1077,11 +1039,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numOfInputs: 16
-  numOfHiddenLayers: 2
   numOfNodesPerHiddenLayer: 16
   numOfOutputs: 4
+  mutationPercent: 0.05
   comPlayer: {fileID: 67528619}
-  numPerGen: 25
+  numPerGen: 10
+  timeBetweenInadequencyChecks: 5
   genText: {fileID: 1505188220}
   currentGenTextPrefab: {fileID: 1611807561864648, guid: 191d545a4debe02448f858816afa32dd,
     type: 2}

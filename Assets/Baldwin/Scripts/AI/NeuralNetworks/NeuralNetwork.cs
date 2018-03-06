@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
-namespace Baldwin
+namespace Baldwin.AI
 {
 	[Serializable]
 	public class NeuralNetwork : IComparable<NeuralNetwork>

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Baldwin;
+using Baldwin.AI;
 using UnityEngine;
 
 namespace Asteroids
