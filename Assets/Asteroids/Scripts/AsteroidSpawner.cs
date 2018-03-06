@@ -37,8 +37,7 @@ namespace Asteroids
 			{
 				for(int i = 0; i < minLargeRoids - largeRoidCount; i++)
 				{
-					Vector3 startPos = Camera.main.ViewportToWorldPoint(new Vector3(Random.value, Random.value));
-					Spawn(startPos, AsteroidSize.LARGE);
+					Spawn();
 				}
 			}
 		}
@@ -52,9 +51,14 @@ namespace Asteroids
 
 			for(int i = 0; i < numOfRoidsToSpawn; i++)
 			{
-				Vector3 startPos = Camera.main.ViewportToWorldPoint(new Vector3(Random.value, Random.value));
-				Spawn(startPos, AsteroidSize.LARGE);
+				Spawn();
 			}
+		}
+
+		public void Spawn()
+		{
+			Vector3 startPos = Camera.main.ViewportToWorldPoint(Extensions.OutsideOfUnitBox());
+			Spawn(startPos, AsteroidSize.LARGE);
 		}
 
 		public void Spawn(Vector2 pos, AsteroidSize size)
@@ -62,7 +66,8 @@ namespace Asteroids
 			Asteroid asteroid = Instantiate(asteroidPrefab, pos, Quaternion.identity).GetComponent<Asteroid>();
 			asteroid.size = size;
 			asteroid.transform.localScale = Vector3.one * GetScaleFromSize(size);
-			asteroid.GetComponent<Rigidbody2D>().AddForce(Random.insideUnitCircle.normalized * 50);
+			asteroid.GetComponent<Rigidbody2D>().AddForce(Random.insideUnitCircle.normalized * (100.0f / GetScaleFromSize(size)));
+			//asteroid.GetComponent<Rigidbody2D>().AddForce((FindObjectOfType<Ship>().transform.position - asteroid.transform.position).normalized * (100.0f / GetScaleFromSize(size)));
 			asteroid.GetComponent<Rigidbody2D>().AddTorque(3);
 		}
 

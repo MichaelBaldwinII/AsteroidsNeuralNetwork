@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Baldwin
 {
+	[Serializable]
 	public class Matrix
 	{
 		public readonly int numOfRows;
@@ -55,6 +57,23 @@ namespace Baldwin
 			}
 		}
 
+		public Matrix(string matrixString)
+		{
+			List<string> valueStrings = matrixString.Split(',').ToList();
+
+			numOfRows = int.Parse(valueStrings[0]);
+			numOfColumns = int.Parse(valueStrings[1]);
+			values = new List<float>(numOfRows * numOfColumns);
+
+			for(int i = 0; i < numOfRows; i++)
+			{
+				for(int j = 0; j < numOfColumns; j++)
+				{
+					values.Add(float.Parse(valueStrings[i * numOfColumns + j + 2]));
+				}
+			}
+		}
+
 		public float this[int a, int b]
 		{
 			get { return values[a * numOfColumns + b]; }
@@ -101,7 +120,19 @@ namespace Baldwin
 			return this;
 		}
 
-		public static Matrix operator +(Matrix lhs, float[] rhs)
+		public new string ToString()
+		{
+			string result = numOfRows + "," + numOfColumns + ",";
+
+			foreach(float iValue in values)
+			{
+				result += iValue + ",";
+			}
+
+			return result;
+		}
+
+		public static Matrix operator +(Matrix lhs, Matrix rhs)
 		{
 			Matrix result = new Matrix(lhs.numOfRows, lhs.numOfColumns);
 
@@ -109,7 +140,7 @@ namespace Baldwin
 			{
 				for(int j = 0; j < lhs.numOfColumns; j++)
 				{
-					result[i, j] = lhs[i, j] + rhs[i];
+					result[i, j] = lhs[i, j] + rhs[0, j];
 				}
 			}
 

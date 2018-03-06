@@ -4,7 +4,6 @@ namespace Asteroids
 {
 	public class Ship : MonoBehaviour
 	{
-		public bool isPlayer;
 		public GameObject thrustGobject;
 		public GameObject bulletPrefab;
 		public float moveSpeed = 3.0f;
@@ -15,20 +14,6 @@ namespace Asteroids
 
 		private void Update()
 		{
-			if(isPlayer)
-			{
-				float verticalInput = Input.GetAxis("Vertical");
-				float horizontalInput = Input.GetAxis("Horizontal");
-				//thrustGobject.SetActive(!Mathf.Approximately(verticalInput, 0));
-				transform.Translate(transform.up * moveSpeed * verticalInput * Time.deltaTime, Space.World);
-				transform.Rotate(0, 0, rotationSpeed * -horizontalInput * Time.deltaTime);
-
-				if(Input.GetButton("Fire1"))
-				{
-					Fire();
-				}
-			}
-
 			thrustGobject.SetActive(!transform.position.Equals(lastPos));
 			lastPos = transform.position;
 		}
@@ -70,7 +55,7 @@ namespace Asteroids
 
 		private void OnCollisionEnter2D(Collision2D other)
 		{
-			FindObjectOfType<GenManager>().OnShipCollision();
+			GenManager.Instance.OnShipCollision();
 			transform.position = Vector3.zero;
 		}
 	}

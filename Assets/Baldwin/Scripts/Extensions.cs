@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Baldwin
 {
@@ -421,6 +422,25 @@ namespace Baldwin
 			bool isNegative = f < 0;
 			int result = Mathf.FloorToInt(Mathf.Abs(f));
 			return isNegative ? -result : result;
+		}
+
+		public static Vector2 OutsideOfUnitBox()
+		{
+			bool onXAxis = Random.value > 0.5;
+			float x = 0.0f;
+			float y = 0.0f;
+			if(onXAxis)
+			{
+				x = Random.value;
+				y = Random.value > 0.5f ? 0.0f : 1.0f;
+			}
+			else
+			{
+				x = Random.value > 0.5f ? 0.0f : 1.0f;
+				y = Random.value;
+			}
+
+			return new Vector2(x, y);
 		}
 
 		#endregion

@@ -23,6 +23,11 @@ namespace Asteroids
 
 		private void OnCollisionEnter2D(Collision2D other)
 		{
+			if(other != null && other.gameObject.name == "Ship")
+			{
+				return;
+			}
+
 			switch(size)
 			{
 				case AsteroidSize.LARGE:
