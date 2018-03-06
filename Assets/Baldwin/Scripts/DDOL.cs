@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Asteroids
+namespace Baldwin
 {
 	public class DDOL : MonoBehaviour
 	{

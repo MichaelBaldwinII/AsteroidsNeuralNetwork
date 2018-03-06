@@ -3,13 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Asteroids
+namespace Baldwin
 {
 	public class Matrix
 	{
-		public int numOfRows;
-		public int numOfColumns;
-		public List<float> values;
+		public readonly int numOfRows;
+		public readonly int numOfColumns;
+		public readonly List<float> values;
+
+		public Matrix()
+		{
+			numOfRows = 0;
+			numOfColumns = 0;
+			values = new List<float>();
+		}
 
 		public Matrix(Matrix mat)
 		{
@@ -29,6 +36,21 @@ namespace Asteroids
 				for(int j = 0; j < this.numOfColumns; j++)
 				{
 					values.Add(0);
+				}
+			}
+		}
+
+		public Matrix(float[] array)
+		{
+			numOfRows = array.Length;
+			numOfColumns = 1;
+			values = new List<float>(numOfRows * numOfColumns);
+
+			for(int i = 0; i < numOfRows; i++)
+			{
+				for(int j = 0; j < numOfColumns; j++)
+				{
+					values.Add(array[i]);
 				}
 			}
 		}
@@ -63,7 +85,7 @@ namespace Asteroids
 			return this;
 		}
 
-		public void Mutate(float percentChance)
+		public Matrix Mutate(float percentChance)
 		{
 			for(int i = 0; i < numOfRows; i++)
 			{
@@ -75,6 +97,8 @@ namespace Asteroids
 					}
 				}
 			}
+
+			return this;
 		}
 
 		public static Matrix operator +(Matrix lhs, float[] rhs)
@@ -109,22 +133,5 @@ namespace Asteroids
 
 			return result;
 		}
-
-		public static Matrix SingleColumnFromArray(float[] arr)
-		{
-			Matrix result = new Matrix(arr.Length, 1);
-
-			for(int i = 0; i < arr.Length; i++)
-			{
-				result[i, 0] = arr[i];
-			}
-
-			return result;
-		}
-
-		/*public static Matrix AddBias(Matrix mat1)
-		{
-			Matrix result = new Matrix(mat1.numOfRows + 1, 1);
-		}*/
 	}
 }

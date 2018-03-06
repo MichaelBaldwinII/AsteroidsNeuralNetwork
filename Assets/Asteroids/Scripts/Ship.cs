@@ -11,8 +11,6 @@ namespace Asteroids
 		public float rotationSpeed = 100.0f;
 		public float reloadSpeed = 1.0f;
 		private float lastShotTime;
-		private bool isWrappingOnX;
-		private bool isWrappingOnY;
 		private Vector3 lastPos;
 
 		private void Update()
@@ -55,41 +53,25 @@ namespace Asteroids
 			}
 		}
 
-		private void OnBecameVisible()
-		{
-			isWrappingOnX = false;
-			isWrappingOnY = false;
-		}
-
 		private void OnBecameInvisible()
 		{
 			Vector2 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
 
-			if((viewportPos.x < 0 || viewportPos.x > 1) && !isWrappingOnX)
+			if(viewportPos.x < 0 || viewportPos.x > 1)
 			{
 				transform.position = new Vector2(-transform.position.x, transform.position.y);
-				isWrappingOnX = true;
 			}
 
-			if((viewportPos.y < 0 || viewportPos.y > 1) && !isWrappingOnY)
+			if(viewportPos.y < 0 || viewportPos.y > 1)
 			{
 				transform.position = new Vector2(transform.position.x, -transform.position.y);
-				isWrappingOnY = true;
 			}
 		}
 
 		private void OnCollisionEnter2D(Collision2D other)
 		{
-			//Ship destroyed, so game ended
-			//Destroy(gameObject);
 			FindObjectOfType<GenManager>().OnShipCollision();
-		}
-
-		public void ResetPos()
-		{
 			transform.position = Vector3.zero;
-			isWrappingOnX = false;
-			isWrappingOnY = false;
 		}
 	}
 }

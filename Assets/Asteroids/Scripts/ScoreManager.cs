@@ -1,13 +1,12 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using Baldwin;
+using UnityEngine;
 
 namespace Asteroids
 {
-	public class ScoreManager : MonoBehaviour
+	public class ScoreManager : Singleton<ScoreManager>
 	{
 		public float currentScore;
 		public bool startIncrement;
-		public Text scoreText;
 
 		public void StartScore()
 		{
@@ -27,8 +26,6 @@ namespace Asteroids
 			{
 				currentScore += Time.deltaTime;
 			}
-
-			scoreText.text = "Score: " + currentScore;
 		}
 
 		public void OnShipCollision()
