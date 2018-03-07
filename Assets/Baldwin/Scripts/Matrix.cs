@@ -41,9 +41,9 @@ namespace Baldwin
 			}
 		}
 
-		public Matrix(float[] array)
+		public Matrix(List<float> valueList)
 		{
-			numOfRows = array.Length;
+			numOfRows = valueList.Count;
 			numOfColumns = 1;
 			values = new List<float>(numOfRows * numOfColumns);
 
@@ -51,7 +51,7 @@ namespace Baldwin
 			{
 				for(int j = 0; j < numOfColumns; j++)
 				{
-					values.Add(array[i]);
+					values.Add(valueList[i]);
 				}
 			}
 		}
@@ -79,7 +79,7 @@ namespace Baldwin
 			{
 				for(int j = 0; j < numOfColumns; j++)
 				{
-					this[i, j] = 1.0f / (1.0f + Mathf.Pow((float)Math.E, -this[i, j]));
+					this[i, j] = Extensions.Sigmoid(this[i, j]);
 				}
 			}
 
@@ -111,6 +111,21 @@ namespace Baldwin
 				for(int j = 0; j < lhs.numOfColumns; j++)
 				{
 					result[i, j] = lhs[i, j] + rhs[0, j];
+				}
+			}
+
+			return result;
+		}
+
+		public static Matrix operator -(Matrix lhs, Matrix rhs)
+		{
+			Matrix result = new Matrix(lhs.numOfRows, lhs.numOfColumns);
+
+			for(int i = 0; i < lhs.numOfRows; i++)
+			{
+				for(int j = 0; j < lhs.numOfColumns; j++)
+				{
+					result[i, j] = lhs[i, j] - rhs[0, j];
 				}
 			}
 

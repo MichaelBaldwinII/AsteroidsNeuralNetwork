@@ -443,6 +443,11 @@ namespace Baldwin
 			return new Vector2(x, y);
 		}
 
+		public static float Sigmoid(float x)
+		{
+			return 1.0f / (1.0f + Mathf.Pow((float)Math.E, -x));
+		}
+
 		#endregion
 	}
 }

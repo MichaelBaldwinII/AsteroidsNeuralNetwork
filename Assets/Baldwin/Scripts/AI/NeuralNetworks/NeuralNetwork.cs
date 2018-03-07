@@ -9,60 +9,82 @@ namespace Baldwin.AI
 	[Serializable]
 	public class NeuralNetwork : IComparable<NeuralNetwork>
 	{
-		public readonly Matrix inputToHidden;
-		public readonly Matrix inputBias;
-		public readonly Matrix hiddenToHidden;
-		public readonly Matrix hiddenBias;
-		public readonly Matrix outputBias;
-		public readonly Matrix hiddenToOutput;
+		public readonly Matrix inputMatrix;
+		public readonly Matrix firstHiddenMatrix;
+		public readonly Matrix secondHiddenMatrix;
+		public readonly Matrix outputMatrix;
+		public readonly Matrix inputBiases;
+		public readonly Matrix firstHiddenBiases;
+		public readonly Matrix secondHiddenBiases;
+		public readonly Matrix outputBiases;
 		public float fitness;
 
-		public NeuralNetwork()
+		public NeuralNetwork(int numOfInputNodes, int numOfHiddenNodes, int numOfOutputNodes)
 		{
-			inputToHidden = new Matrix(0, 0);
-			inputBias = new Matrix(0, 0);
-			hiddenToHidden = new Matrix(0, 0);
-			hiddenBias = new Matrix(0, 0);
-			outputBias = new Matrix(0, 0);
-			hiddenToOutput = new Matrix(0, 0);
+			inputMatrix = new Matrix(numOfHiddenNodes, numOfInputNodes);
+			firstHiddenMatrix = new Matrix(numOfHiddenNodes, numOfHiddenNodes);
+			secondHiddenMatrix = new Matrix(numOfHiddenNodes, numOfHiddenNodes);
+			outputMatrix = new Matrix(numOfOutputNodes, numOfHiddenNodes);
+			inputBiases = new Matrix(numOfInputNodes, 1);
+			firstHiddenBiases = new Matrix(numOfHiddenNodes, 1);
+			secondHiddenBiases = new Matrix(numOfHiddenNodes, 1);
+			outputBiases = new Matrix(numOfOutputNodes, 1);
 			fitness = 0;
+
+			inputMatrix.Randomize();
+			firstHiddenMatrix.Randomize();
+			secondHiddenMatrix.Randomize();
+			outputMatrix.Randomize();
+			inputBiases.Randomize();
+			firstHiddenBiases.Randomize();
+			secondHiddenBiases.Randomize();
+			outputBiases.Randomize();
 		}
 
-		public NeuralNetwork(int numOfInputs, int numOfHiddenNodesPerlayer, int numOfOutputs)
+		public NeuralNetwork(NeuralNetwork otherNetwork)
 		{
-			inputToHidden = new Matrix(numOfHiddenNodesPerlayer, numOfInputs);
-			inputBias = new Matrix(numOfInputs, 1);
-			hiddenToHidden = new Matrix(numOfHiddenNodesPerlayer, numOfHiddenNodesPerlayer);
-			hiddenBias = new Matrix(numOfHiddenNodesPerlayer, 1);
-			outputBias = new Matrix(numOfHiddenNodesPerlayer, 1);
-			hiddenToOutput = new Matrix(numOfOutputs, numOfHiddenNodesPerlayer);
-			fitness = 0;
-			inputToHidden.Randomize();
-			inputBias.Randomize();
-			hiddenToHidden.Randomize();
-			hiddenBias.Randomize();
-			outputBias.Randomize();
-			hiddenToOutput.Randomize();
-		}
-
-		public NeuralNetwork(NeuralNetwork neuralNetwork)
-		{
-			inputToHidden = new Matrix(neuralNetwork.inputToHidden);
-			inputBias = new Matrix(neuralNetwork.inputBias);
-			hiddenToHidden = new Matrix(neuralNetwork.hiddenToHidden);
-			hiddenBias = new Matrix(neuralNetwork.hiddenBias);
-			outputBias = new Matrix(neuralNetwork.outputBias);
-			hiddenToOutput = new Matrix(neuralNetwork.hiddenToOutput);
+			inputMatrix = new Matrix(otherNetwork.inputMatrix);
+			firstHiddenMatrix = new Matrix(otherNetwork.firstHiddenMatrix);
+			secondHiddenMatrix = new Matrix(otherNetwork.secondHiddenMatrix);
+			outputMatrix = new Matrix(otherNetwork.outputMatrix);
+			inputBiases = new Matrix(otherNetwork.inputBiases);
+			firstHiddenBiases = new Matrix(otherNetwork.firstHiddenBiases);
+			secondHiddenBiases = new Matrix(otherNetwork.secondHiddenBiases);
+			outputBiases = new Matrix(otherNetwork.outputBiases);
 			fitness = 0;
 		}
 
 		public List<float> Process(List<float> inputValues)
 		{
-			Matrix inputs = new Matrix(inputValues.ToArray()) + inputBias;
-			Matrix i2h = (inputToHidden * inputs).Sigmoid() + hiddenBias;
-			Matrix h2h = (hiddenToHidden * i2h).Sigmoid() + outputBias;
-			Matrix h2o = (hiddenToOutput * h2h).Sigmoid();
-			return h2o.values;
+			Matrix inputToHidden = inputMatrix * new Matrix(inputValues);
+			inputToHidden -= inputBiases;
+			inputToHidden.Sigmoid();
+
+			Matrix hiddenToHidden = firstHiddenMatrix * inputToHidden;
+			hiddenToHidden -= firstHiddenBiases;
+			hiddenToHidden.Sigmoid();
+
+			Matrix hiddenToOutput = secondHiddenMatrix * hiddenToHidden;
+			hiddenToOutput -= secondHiddenBiases;
+			hiddenToOutput.Sigmoid();
+
+			Matrix outputToResult = outputMatrix * hiddenToOutput;
+			outputToResult -= outputBiases;
+			outputToResult.Sigmoid();
+
+			return outputToResult.values;
+		}
+
+		public void Mutate(float mutationPercent)
+		{
+			inputMatrix.Mutate(mutationPercent);
+			firstHiddenMatrix.Mutate(mutationPercent);
+			secondHiddenMatrix.Mutate(mutationPercent);
+			outputMatrix.Mutate(mutationPercent);
+			inputBiases.Mutate(mutationPercent);
+			firstHiddenBiases.Mutate(mutationPercent);
+			secondHiddenBiases.Mutate(mutationPercent);
+			outputBiases.Mutate(mutationPercent);
 		}
 
 		public int CompareTo(NeuralNetwork other)
@@ -78,19 +100,6 @@ namespace Baldwin.AI
 			}
 
 			return 0;
-		}
-
-		/// <summary>
-		/// Mutate this NeuralNetworks matrix values based upon a small mutation percentange.
-		/// </summary>
-		public void Mutate(float mutationPercent)
-		{
-			inputToHidden.Mutate(mutationPercent);
-			inputBias.Mutate(mutationPercent);
-			hiddenToHidden.Mutate(mutationPercent);
-			hiddenBias.Mutate(mutationPercent);
-			outputBias.Mutate(mutationPercent);
-			hiddenToOutput.Mutate(mutationPercent);
 		}
 
 		public static void SaveToFile(NeuralNetwork network, string fileName)
