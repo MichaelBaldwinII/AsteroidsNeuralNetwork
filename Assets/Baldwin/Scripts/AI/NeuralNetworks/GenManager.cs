@@ -17,7 +17,7 @@ namespace Baldwin.AI
 
 		[Header("Gen Control")]
 		public int numPerGen = 10;
-		public float timeBetweenInadequencyChecks = 5.0f;
+		//public float timeBetweenInadequencyChecks = 5.0f;
 		private float currentScore;
 		private int currentGenNumber;
 		private readonly List<NeuralNetwork> neuralNetworks = new List<NeuralNetwork>();
@@ -30,8 +30,8 @@ namespace Baldwin.AI
 		private int index;
 		private NeuralNetwork lastGenWinner;
 
-		private float lastTimeCheck;
-		private float lastScore;
+		//private float lastTimeCheck;
+		//private float lastScore;
 
 		public void AddFitness(float amount)
 		{
@@ -43,7 +43,7 @@ namespace Baldwin.AI
 			currentGenNumber = 1;
 			index = 0;
 			currentRunText = Instantiate(currentGenTextPrefab, scrollViewContent.transform).GetOrAddComponent<Text>();
-			lastTimeCheck = Time.time;
+			//lastTimeCheck = Time.time;
 
 			//Populate the first generation
 			for(int i = 0; i < numPerGen; i++)
@@ -56,7 +56,7 @@ namespace Baldwin.AI
 
 		private void Update()
 		{
-			if(Time.time - lastTimeCheck > timeBetweenInadequencyChecks)
+			/*if(Time.time - lastTimeCheck > timeBetweenInadequencyChecks)
 			{
 				if(Mathf.Approximately(currentScore, lastScore))
 				{
@@ -65,12 +65,13 @@ namespace Baldwin.AI
 				}
 				lastTimeCheck = Time.time;
 				lastScore = 0;
-			}
+			}*/
 
 			neuralNetworks[index].fitness = currentScore;
 			comPlayer.brain = neuralNetworks[index];
 
 			currentRunText.text = (index + 1) + ": " + neuralNetworks[index].fitness;
+			currentRunText.color = Color.magenta;
 			genText.text = "Gen: " + currentGenNumber;
 		}
 
@@ -79,9 +80,9 @@ namespace Baldwin.AI
 			AsteroidSpawner.Instance.Restart();
 			currentScore = 0;
 			index++;
-			FindObjectOfType<Ship>().transform.position = Vector3.zero;
-			lastTimeCheck = Time.time;
-			lastScore = 0;
+			FindObjectOfType<Ship>().ResetShip();
+			//lastTimeCheck = Time.time;
+			//lastScore = 0;
 			List<Bullet> allBullets = FindObjectsOfType<Bullet>().ToList();
 			foreach(Bullet iBullet in allBullets)
 			{
@@ -114,6 +115,7 @@ namespace Baldwin.AI
 				}
 			}
 
+			currentRunText.color = Color.white;
 			currentRunText = Instantiate(currentGenTextPrefab, scrollViewContent.transform).GetOrAddComponent<Text>();
 		}
 

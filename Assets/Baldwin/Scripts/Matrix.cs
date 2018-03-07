@@ -73,7 +73,7 @@ namespace Baldwin
 			}
 		}
 
-		public Matrix Sigmoid()
+		public void Sigmoid()
 		{
 			for(int i = 0; i < numOfRows; i++)
 			{
@@ -82,11 +82,9 @@ namespace Baldwin
 					this[i, j] = Extensions.Sigmoid(this[i, j]);
 				}
 			}
-
-			return this;
 		}
 
-		public Matrix Mutate(float percentChance)
+		public void Mutate(float percentChance)
 		{
 			for(int i = 0; i < numOfRows; i++)
 			{
@@ -94,12 +92,10 @@ namespace Baldwin
 				{
 					if(Random.value <= percentChance)
 					{
-						this[i, j] = Mathf.Clamp(this[i, j] + Random.Range(-1.0f, 1.0f), -1.0f, 1.0f);
+						this[i, j] = Mathf.Clamp(this[i, j] * Random.Range(-2.0f, 2.0f), -1.0f, 1.0f);
 					}
 				}
 			}
-
-			return this;
 		}
 
 		public static Matrix operator +(Matrix lhs, Matrix rhs)

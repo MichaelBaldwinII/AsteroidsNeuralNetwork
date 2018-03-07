@@ -60,7 +60,13 @@ namespace Asteroids
 		private void OnCollisionEnter2D(Collision2D other)
 		{
 			GenManager.Instance.OnShipCollision();
+			ResetShip();
+		}
+
+		public void ResetShip()
+		{
 			transform.position = Vector3.zero;
+			transform.rotation = Quaternion.identity;
 		}
 	}
 }
