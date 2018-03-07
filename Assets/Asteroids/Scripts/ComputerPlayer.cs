@@ -7,6 +7,7 @@ namespace Asteroids
 	public class ComputerPlayer : MonoBehaviour
 	{
 		public NeuralNetwork brain;
+		public bool drawRays = false;
 		private Ship ship;
 
 		private void Start()
@@ -23,46 +24,72 @@ namespace Asteroids
 		{
 			//There are 16 inputs, the 8 directions and the 8 distances to an asteroid in those directions.
 			//First enter the inputs
-			List<Ray2D> rays = new List<Ray2D>(8)
-			{
-				new Ray2D(ship.transform.position, ship.transform.up),
-				new Ray2D(ship.transform.position, (ship.transform.up + ship.transform.right).normalized),
-				new Ray2D(ship.transform.position, ship.transform.right),
-				new Ray2D(ship.transform.position, (-ship.transform.up + ship.transform.right).normalized),
-				new Ray2D(ship.transform.position, -ship.transform.up),
-				new Ray2D(ship.transform.position, (-ship.transform.up + -ship.transform.right).normalized),
-				new Ray2D(ship.transform.position, -ship.transform.right),
-				new Ray2D(ship.transform.position, (ship.transform.up + -ship.transform.right).normalized)
-			};
-			List<RaycastHit2D> hits = new List<RaycastHit2D>(8)
-			{
-				Physics2D.Raycast(ship.transform.position, ship.transform.up, float.MaxValue, LayerMask.GetMask("Asteroids")),
-				Physics2D.Raycast(ship.transform.position, (ship.transform.up + ship.transform.right).normalized, float.MaxValue, LayerMask.GetMask("Asteroids")),
-				Physics2D.Raycast(ship.transform.position, ship.transform.right, float.MaxValue, LayerMask.GetMask("Asteroids")),
-				Physics2D.Raycast(ship.transform.position, (-ship.transform.up + ship.transform.right).normalized, float.MaxValue, LayerMask.GetMask("Asteroids")),
-				Physics2D.Raycast(ship.transform.position, -ship.transform.up, float.MaxValue, LayerMask.GetMask("Asteroids")),
-				Physics2D.Raycast(ship.transform.position, (-ship.transform.up + -ship.transform.right).normalized, float.MaxValue, LayerMask.GetMask("Asteroids")),
-				Physics2D.Raycast(ship.transform.position, -ship.transform.right, float.MaxValue, LayerMask.GetMask("Asteroids")),
-				Physics2D.Raycast(ship.transform.position, (ship.transform.up + -ship.transform.right).normalized, float.MaxValue, LayerMask.GetMask("Asteroids"))
-			};
+			/*Vector2 deg0 = ship.transform.right;
+			Vector2 deg90 = ship.transform.up;
+			Vector2 deg180 = -ship.transform.right;
+			Vector2 deg270 = -ship.transform.up;
 
-			for(int i = 0; i < 8; i++)
+			Vector2 deg45 = (deg0 + deg90).normalized;
+			Vector2 deg135 = (deg90 + deg180).normalized;
+			Vector2 deg225 = (deg180 + deg270).normalized;
+			Vector2 deg315 = (deg270 + deg0).normalized;
+
+			Vector2 deg30 = (deg0 + deg45).normalized;
+			Vector2 deg60 = (deg45 + deg90).normalized;
+			Vector2 deg120 = (deg90 + deg135).normalized;
+			Vector2 deg150 = (deg135 + deg180).normalized;
+			Vector2 deg210 = (deg180 + deg225).normalized;
+			Vector2 deg240 = (deg225 + deg270).normalized;
+			Vector2 deg300 = (deg270 + deg315).normalized;
+			Vector2 deg330 = (deg315 + deg0).normalized;*/
+
+			List<Ray2D> rays = new List<Ray2D>();
+			for(int i = 0; i < 360; i++)
 			{
-				Debug.DrawRay(rays[i].origin, hits[i].distance > 0 ? rays[i].direction * hits[i].distance : rays[i].direction * 100);
+				rays.Add(new Ray2D(ship.transform.position, Quaternion.AngleAxis(i, Vector3.forward) * ship.transform.right));
+			}//*/
+
+			/*List<Ray2D> rays = new List<Ray2D>
+			{
+				new Ray2D(ship.transform.position, deg0),
+				new Ray2D(ship.transform.position, deg30),
+				new Ray2D(ship.transform.position, deg45),
+				new Ray2D(ship.transform.position, deg60),
+				new Ray2D(ship.transform.position, deg90),
+				new Ray2D(ship.transform.position, deg120),
+				new Ray2D(ship.transform.position, deg135),
+				new Ray2D(ship.transform.position, deg150),
+				new Ray2D(ship.transform.position, deg180),
+				new Ray2D(ship.transform.position, deg210),
+				new Ray2D(ship.transform.position, deg225),
+				new Ray2D(ship.transform.position, deg240),
+				new Ray2D(ship.transform.position, deg270),
+				new Ray2D(ship.transform.position, deg300),
+				new Ray2D(ship.transform.position, deg315),
+				new Ray2D(ship.transform.position, deg330)
+			};//*/
+
+			List<RaycastHit2D> hits = new List<RaycastHit2D>();
+			foreach(Ray2D iRay in rays)
+			{
+				hits.Add(Physics2D.Raycast(iRay.origin, iRay.direction, float.MaxValue, LayerMask.GetMask("Asteroids")));
+			}
+
+			if(drawRays)
+			{
+				for(int i = 0; i < rays.Count; i++)
+				{
+					Debug.DrawRay(rays[i].origin, hits[i].distance > 0 ? rays[i].direction * hits[i].distance : rays[i].direction * 100);
+				}
 			}
 
 			//Input the collision detected inputs
-			List<float> inputValues = new List<float>(16)
+			List<float> inputValues = new List<float>();
+			foreach(RaycastHit2D iHit in hits)
 			{
-				hits[0].collider != null ? 1.0f : 0.0f, hits[0].distance,
-				hits[1].collider != null ? 1.0f : 0.0f, hits[1].distance,
-				hits[2].collider != null ? 1.0f : 0.0f, hits[2].distance,
-				hits[3].collider != null ? 1.0f : 0.0f, hits[3].distance,
-				hits[4].collider != null ? 1.0f : 0.0f, hits[4].distance,
-				hits[5].collider != null ? 1.0f : 0.0f, hits[5].distance,
-				hits[6].collider != null ? 1.0f : 0.0f, hits[6].distance,
-				hits[7].collider != null ? 1.0f : 0.0f, hits[7].distance
-			};
+				inputValues.Add(iHit.collider != null ? 1.0f : 0.0f);
+				inputValues.Add(iHit.distance);
+			}
 
 			return inputValues;
 		}

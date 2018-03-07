@@ -35,25 +35,25 @@ namespace Asteroids
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.MEDIUM);
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.MEDIUM);
 					Destroy(gameObject);
-					GenManager.Instance.AddFitness(10);
+					GenManager.Instance.AddFitness(3);
 					break;
 				case AsteroidSize.MEDIUM:
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.NORMAL);
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.NORMAL);
 					Destroy(gameObject);
-					GenManager.Instance.AddFitness(20);
+					GenManager.Instance.AddFitness(5);
 					break;
 				case AsteroidSize.NORMAL:
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.SMALL);
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.SMALL);
 					Destroy(gameObject);
-					GenManager.Instance.AddFitness(30);
+					GenManager.Instance.AddFitness(10);
 					break;
 				case AsteroidSize.SMALL:
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.TINY);
 					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.TINY);
 					Destroy(gameObject);
-					GenManager.Instance.AddFitness(40);
+					GenManager.Instance.AddFitness(25);
 					break;
 				case AsteroidSize.TINY: //If tiny size, then we just disappear
 					Destroy(gameObject);

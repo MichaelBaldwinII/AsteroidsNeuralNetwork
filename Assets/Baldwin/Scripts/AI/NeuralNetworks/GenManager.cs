@@ -10,7 +10,8 @@ namespace Baldwin.AI
 	{
 		[Header("Neural Network Config")]
 		public int numOfInputs = 16;
-		public int numOfNodesPerHiddenLayer = 16;
+		public int numOfHiddenMatrices = 2;
+		public int numOfHiddenNodes = 16;
 		public int numOfOutputs = 4;
 		public float mutationPercent = 0.05f;
 		public ComputerPlayer comPlayer;
@@ -48,7 +49,7 @@ namespace Baldwin.AI
 			//Populate the first generation
 			for(int i = 0; i < numPerGen; i++)
 			{
-				neuralNetworks.Add(new NeuralNetwork(numOfInputs, numOfNodesPerHiddenLayer, numOfOutputs));
+				neuralNetworks.Add(new NeuralNetwork(numOfInputs, numOfHiddenMatrices, numOfHiddenNodes, numOfOutputs));
 			}
 
 			currentScore = 0;

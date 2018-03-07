@@ -10,46 +10,47 @@ namespace Baldwin.AI
 	public class NeuralNetwork : IComparable<NeuralNetwork>
 	{
 		public readonly Matrix inputMatrix;
-		public readonly Matrix firstHiddenMatrix;
-		public readonly Matrix secondHiddenMatrix;
+		public readonly List<Matrix> hiddenMatrices = new List<Matrix>();
 		public readonly Matrix outputMatrix;
 		public readonly Matrix inputBiases;
-		public readonly Matrix firstHiddenBiases;
-		public readonly Matrix secondHiddenBiases;
+		public readonly List<Matrix> hiddenBiases = new List<Matrix>();
 		public readonly Matrix outputBiases;
 		public float fitness;
 
-		public NeuralNetwork(int numOfInputNodes, int numOfHiddenNodes, int numOfOutputNodes)
+		public NeuralNetwork(int numOfInputNodes, int numOfHiddenMatrices, int numOfHiddenNodes, int numOfOutputNodes)
 		{
 			inputMatrix = new Matrix(numOfHiddenNodes, numOfInputNodes);
-			firstHiddenMatrix = new Matrix(numOfHiddenNodes, numOfHiddenNodes);
-			secondHiddenMatrix = new Matrix(numOfHiddenNodes, numOfHiddenNodes);
-			outputMatrix = new Matrix(numOfOutputNodes, numOfHiddenNodes);
 			inputBiases = new Matrix(numOfInputNodes, 1);
-			firstHiddenBiases = new Matrix(numOfHiddenNodes, 1);
-			secondHiddenBiases = new Matrix(numOfHiddenNodes, 1);
+			for(int i = 0; i < numOfHiddenMatrices; i++)
+			{
+				hiddenMatrices.Add(new Matrix(numOfHiddenNodes, numOfHiddenNodes));
+				hiddenBiases.Add(new Matrix(numOfHiddenNodes, 1));
+			}
+			outputMatrix = new Matrix(numOfOutputNodes, numOfHiddenNodes);
 			outputBiases = new Matrix(numOfOutputNodes, 1);
 			fitness = 0;
 
 			inputMatrix.Randomize();
-			firstHiddenMatrix.Randomize();
-			secondHiddenMatrix.Randomize();
-			outputMatrix.Randomize();
 			inputBiases.Randomize();
-			firstHiddenBiases.Randomize();
-			secondHiddenBiases.Randomize();
+			for(int i = 0; i < numOfHiddenMatrices; i++)
+			{
+				hiddenMatrices[i].Randomize();
+				hiddenBiases[i].Randomize();
+			}
+			outputMatrix.Randomize();
 			outputBiases.Randomize();
 		}
 
 		public NeuralNetwork(NeuralNetwork otherNetwork)
 		{
 			inputMatrix = new Matrix(otherNetwork.inputMatrix);
-			firstHiddenMatrix = new Matrix(otherNetwork.firstHiddenMatrix);
-			secondHiddenMatrix = new Matrix(otherNetwork.secondHiddenMatrix);
-			outputMatrix = new Matrix(otherNetwork.outputMatrix);
 			inputBiases = new Matrix(otherNetwork.inputBiases);
-			firstHiddenBiases = new Matrix(otherNetwork.firstHiddenBiases);
-			secondHiddenBiases = new Matrix(otherNetwork.secondHiddenBiases);
+			for(int i = 0; i < otherNetwork.hiddenMatrices.Count; i++)
+			{
+				hiddenMatrices.Add(new Matrix(otherNetwork.hiddenMatrices[i]));
+				hiddenBiases.Add(new Matrix(otherNetwork.hiddenBiases[i]));
+			}
+			outputMatrix = new Matrix(otherNetwork.outputMatrix);
 			outputBiases = new Matrix(otherNetwork.outputBiases);
 			fitness = 0;
 		}
@@ -60,13 +61,13 @@ namespace Baldwin.AI
 			inputToHidden -= inputBiases;
 			inputToHidden.Sigmoid();
 
-			Matrix hiddenToHidden = firstHiddenMatrix * inputToHidden;
-			hiddenToHidden -= firstHiddenBiases;
-			hiddenToHidden.Sigmoid();
-
-			Matrix hiddenToOutput = secondHiddenMatrix * hiddenToHidden;
-			hiddenToOutput -= secondHiddenBiases;
-			hiddenToOutput.Sigmoid();
+			Matrix hiddenToOutput = new Matrix(inputToHidden);
+			for(int i = 0; i < hiddenMatrices.Count; i++)
+			{
+				hiddenToOutput = hiddenMatrices[i] * hiddenToOutput;
+				hiddenToOutput -= hiddenBiases[i];
+				hiddenToOutput.Sigmoid();
+			}
 
 			Matrix outputToResult = outputMatrix * hiddenToOutput;
 			outputToResult -= outputBiases;
@@ -78,12 +79,13 @@ namespace Baldwin.AI
 		public void Mutate(float mutationPercent)
 		{
 			inputMatrix.Mutate(mutationPercent);
-			firstHiddenMatrix.Mutate(mutationPercent);
-			secondHiddenMatrix.Mutate(mutationPercent);
-			outputMatrix.Mutate(mutationPercent);
 			inputBiases.Mutate(mutationPercent);
-			firstHiddenBiases.Mutate(mutationPercent);
-			secondHiddenBiases.Mutate(mutationPercent);
+			for(int i = 0; i < hiddenMatrices.Count; i++)
+			{
+				hiddenMatrices[i].Mutate(mutationPercent);
+				hiddenBiases[i].Mutate(mutationPercent);
+			}
+			outputMatrix.Mutate(mutationPercent);
 			outputBiases.Mutate(mutationPercent);
 		}
 

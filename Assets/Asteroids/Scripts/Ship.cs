@@ -25,6 +25,7 @@ namespace Asteroids
 		public void Thrust()
 		{
 			transform.Translate(transform.up * moveSpeed * Time.deltaTime, Space.World);
+			GenManager.Instance.AddFitness(Time.deltaTime);
 		}
 
 		public void Rotate(bool inPosDir)
@@ -39,6 +40,7 @@ namespace Asteroids
 				GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
 				bullet.GetComponent<Rigidbody2D>().AddForce(transform.up * 300);
 				lastShotTime = Time.time;
+				GenManager.Instance.AddFitness(-1);
 			}
 		}
 

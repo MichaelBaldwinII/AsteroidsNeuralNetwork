@@ -92,7 +92,7 @@ namespace Baldwin
 				{
 					if(Random.value <= percentChance)
 					{
-						this[i, j] = Mathf.Clamp(this[i, j] * Random.Range(-2.0f, 2.0f), -1.0f, 1.0f);
+						this[i, j] = this[i, j] * Random.Range(-1.5f, 1.5f);
 					}
 				}
 			}
