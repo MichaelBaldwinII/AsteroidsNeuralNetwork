@@ -445,7 +445,7 @@ namespace Baldwin
 
 		public static float Sigmoid(float x)
 		{
-			return 1.0f / (1.0f + Mathf.Pow((float)Math.E, -x));
+			return 1.0f / (1.0f + Mathf.Exp(-x));
 		}
 
 		#endregion

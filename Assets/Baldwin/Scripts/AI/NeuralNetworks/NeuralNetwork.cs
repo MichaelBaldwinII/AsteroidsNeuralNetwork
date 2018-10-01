@@ -9,85 +9,59 @@ namespace Baldwin.AI
 	[Serializable]
 	public class NeuralNetwork : IComparable<NeuralNetwork>
 	{
-		public readonly Matrix inputMatrix;
-		public readonly List<Matrix> hiddenMatrices = new List<Matrix>();
-		public readonly Matrix outputMatrix;
-		public readonly Matrix inputBiases;
-		public readonly List<Matrix> hiddenBiases = new List<Matrix>();
-		public readonly Matrix outputBiases;
+		public Layer inputLayer;
+		public List<Layer> hiddenLayers;
+		public Layer outputLayer;
 		public float fitness;
 
-		public NeuralNetwork(int numOfInputNodes, int numOfHiddenMatrices, int numOfHiddenNodes, int numOfOutputNodes)
+		public NeuralNetwork(int numOfInputs, int numOfHiddenLayers, int numOfNodesPerHiddenLayer, int numOfOutputs)
 		{
-			inputMatrix = new Matrix(numOfHiddenNodes, numOfInputNodes);
-			inputBiases = new Matrix(numOfInputNodes, 1);
-			for(int i = 0; i < numOfHiddenMatrices; i++)
+			inputLayer = new Layer(numOfInputs);
+			hiddenLayers = new List<Layer>(numOfHiddenLayers);
+			for(var i = 0; i < numOfHiddenLayers; i++)
 			{
-				hiddenMatrices.Add(new Matrix(numOfHiddenNodes, numOfHiddenNodes));
-				hiddenBiases.Add(new Matrix(numOfHiddenNodes, 1));
+				hiddenLayers.Add(new Layer(numOfNodesPerHiddenLayer));
+				foreach(var iLayer in hiddenLayers)
+					iLayer.Randomize();
 			}
-			outputMatrix = new Matrix(numOfOutputNodes, numOfHiddenNodes);
-			outputBiases = new Matrix(numOfOutputNodes, 1);
-			fitness = 0;
-
-			inputMatrix.Randomize();
-			inputBiases.Randomize();
-			for(int i = 0; i < numOfHiddenMatrices; i++)
-			{
-				hiddenMatrices[i].Randomize();
-				hiddenBiases[i].Randomize();
-			}
-			outputMatrix.Randomize();
-			outputBiases.Randomize();
+			outputLayer = new Layer(numOfOutputs);
+			outputLayer.Randomize();
 		}
 
 		public NeuralNetwork(NeuralNetwork otherNetwork)
 		{
-			inputMatrix = new Matrix(otherNetwork.inputMatrix);
-			inputBiases = new Matrix(otherNetwork.inputBiases);
-			for(int i = 0; i < otherNetwork.hiddenMatrices.Count; i++)
-			{
-				hiddenMatrices.Add(new Matrix(otherNetwork.hiddenMatrices[i]));
-				hiddenBiases.Add(new Matrix(otherNetwork.hiddenBiases[i]));
-			}
-			outputMatrix = new Matrix(otherNetwork.outputMatrix);
-			outputBiases = new Matrix(otherNetwork.outputBiases);
-			fitness = 0;
+			inputLayer = new Layer(otherNetwork.inputLayer);
+			hiddenLayers = new List<Layer>(otherNetwork.hiddenLayers.Count);
+			for(var i = 0; i < otherNetwork.hiddenLayers.Count; i++)
+				hiddenLayers.Add(new Layer(otherNetwork.hiddenLayers[i]));
+			outputLayer = new Layer(otherNetwork.outputLayer);
 		}
 
 		public List<float> Process(List<float> inputValues)
 		{
-			Matrix inputToHidden = inputMatrix * new Matrix(inputValues);
-			inputToHidden -= inputBiases;
-			inputToHidden.Sigmoid();
-
-			Matrix hiddenToOutput = new Matrix(inputToHidden);
-			for(int i = 0; i < hiddenMatrices.Count; i++)
+			inputLayer.Process(inputValues);
+			for(var i = 0; i < hiddenLayers.Count; i++)
 			{
-				hiddenToOutput = hiddenMatrices[i] * hiddenToOutput;
-				hiddenToOutput -= hiddenBiases[i];
-				hiddenToOutput.Sigmoid();
+				if(i == 0)
+					hiddenLayers[i].Process(inputLayer.values);
+				else
+					hiddenLayers[i].Process(hiddenLayers[i - 1].values);
 			}
-
-			Matrix outputToResult = outputMatrix * hiddenToOutput;
-			outputToResult -= outputBiases;
-			outputToResult.Sigmoid();
-
-			return outputToResult.values;
+			outputLayer.Process(hiddenLayers[hiddenLayers.Count - 1].values);
+			outputLayer.Sigmoid();
+			return outputLayer.values;
 		}
 
 		public void Mutate(float mutationPercent)
 		{
-			inputMatrix.Mutate(mutationPercent);
-			inputBiases.Mutate(mutationPercent);
-			for(int i = 0; i < hiddenMatrices.Count; i++)
+			foreach(var iLayer in hiddenLayers)
 			{
-				hiddenMatrices[i].Mutate(mutationPercent);
-				hiddenBiases[i].Mutate(mutationPercent);
+				iLayer.Mutate(mutationPercent);
 			}
-			outputMatrix.Mutate(mutationPercent);
-			outputBiases.Mutate(mutationPercent);
+			outputLayer.Mutate(mutationPercent);
 		}
+
+		#region IComparable
 
 		public int CompareTo(NeuralNetwork other)
 		{
@@ -104,9 +78,11 @@ namespace Baldwin.AI
 			return 0;
 		}
 
+		#endregion
+
 		public static void SaveToFile(NeuralNetwork network, string fileName)
 		{
-			string destination = Application.persistentDataPath + "/" + fileName + ".NN";
+			var destination = Application.persistentDataPath + "/" + fileName + ".NN";
 			FileStream file = File.Exists(destination) ? File.OpenWrite(destination) : File.Create(destination);
 			BinaryFormatter bf = new BinaryFormatter();
 			bf.Serialize(file, network);
@@ -115,7 +91,7 @@ namespace Baldwin.AI
 
 		public static NeuralNetwork LoadFromFile(string fileName)
 		{
-			string destination = Application.persistentDataPath + "/" + fileName + ".NN";
+			var destination = Application.persistentDataPath + "/" + fileName + ".NN";
 			FileStream file = File.Exists(destination) ? File.OpenRead(destination) : File.Create(destination);
 			BinaryFormatter bf = new BinaryFormatter();
 			NeuralNetwork result = (NeuralNetwork)bf.Deserialize(file);

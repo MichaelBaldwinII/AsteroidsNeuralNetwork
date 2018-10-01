@@ -8,9 +8,9 @@ namespace Baldwin.AI
 	public class GenManager : Singleton<GenManager>
 	{
 		[Header("Neural Network Config")]
-		public int numOfInputs = 16;
-		public int numOfHiddenMatrices = 2;
-		public int numOfHiddenNodes = 16;
+		public int numOfInputs = 360;
+		public int numOfHiddenLayers = 2;
+		public int numOfHiddenNodesPerLayer = 16;
 		public int numOfOutputs = 4;
 		public float mutationPercent = 0.05f;
 		public ComputerPlayer comPlayer;
@@ -37,9 +37,14 @@ namespace Baldwin.AI
 			numOfInputs = int.Parse(value);
 		}
 
-		public void SetNumOfHiddenMatrices(string value)
+		public void SetNumOfHiddenLayers(string value)
 		{
-			numOfHiddenMatrices = int.Parse(value);
+			numOfHiddenLayers = int.Parse(value);
+		}
+
+		public void SetNumOfHiddenNodesPerLayer(string value)
+		{
+			numOfHiddenNodesPerLayer = int.Parse(value);
 		}
 
 		public void SetMutationChance(string value)
@@ -61,7 +66,7 @@ namespace Baldwin.AI
 			//Populate the first generation
 			for(var i = 0; i < numPerGen; i++)
 			{
-				neuralNetworks.Add(new NeuralNetwork(numOfInputs, numOfHiddenMatrices, numOfHiddenNodes, numOfOutputs));
+				neuralNetworks.Add(new NeuralNetwork(numOfInputs, numOfHiddenLayers, numOfHiddenNodesPerLayer, numOfOutputs));
 			}
 
 			CurrentNN = neuralNetworks[0];
