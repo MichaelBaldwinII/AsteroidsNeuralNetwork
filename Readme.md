@@ -13,13 +13,14 @@ My hope is to not only have the algorithm perform mutations on the next generati
 The whole thing is done in the Unity game engine.
 
 --NEW RUN SETUP--  
--Num of Input Raycasts = 720 (or greater, I need to fix a bug, just set it to 720 and be happy)  
--Num Of Hidden Nodes = 1-99 (I personally set to 99, but it really doesn't change much)  
--Initial Roid Spawn = 10 (How many asteroids to initially spawn at start)  
--Min Large Roid Spawn = 3 (Minimum number of large asteroids that must be on screen)  
--Move Speed = 3.0 (speed of the ship, in "units" per second)  
--Rotation Speed = 100 (degrees per second the ship can rotate)  
--Reload Speed = 1.0 (how many seconds must elapse between shots)  
--Bullet Lifetime = 1.5 (How many seconds the bullets stay "alive")  
--Number Per Generation = 25 (How many Neural Networks are simulated each generation)  
--Mutation Percentage = 5 (Percentage chance of a single value in a single hidden node (matrix) has to change between generations. Smaller chance increases "refined" behaviours but takes a LOT longer to reach. Larger chance can reach maximum potential at a quicker rate but will most likely overshoot the optimal network solution)  
+-Num of Inputs: The number of raycasts to perform/2. Please keep above 1. Game slows down above 720 due to vector maths.  
+-Num Of Hidden Layers: How many distinct layers there are for processing. More equals slower calculations but possibly better behaviour.  
+-Num Of Hidden Nodes (Per Layer): How many nodes are in each hidden layer. More is slower, but "possibly" better behaviour later on.  
+-Initial Roid Spawn: How many large asteroids are spawned at the start of a new run.  
+-Min Large Roid Spawn: Minimum number of large asteroids that must be on screen at any one time.  
+-Move Speed: Speed of the ship, in "units" per second.  
+-Rotation Speed: Degrees per second the ship can rotate at.  
+-Reload Speed: How many seconds must elapse between shots.  
+-Bullet Lifetime: How many seconds the bullets are allowed to exist.  
+-Number Per Generation: How many Neural Networks are simulated each generation.  
+-Mutation Percentage: Percentage chance of a single value in a single hidden layer has to change between generations. Smaller chance increases "refined" behaviours but takes a LOT longer to reach. Larger chance can reach maximum potential at a quicker rate but will most likely overshoot the optimal network solution.  
