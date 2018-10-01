@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Asteroids
 {
-	public class AsteroidSpawner : Singleton<AsteroidSpawner>
+	public class AsteroidSpawner : Singleton<AsteroidSpawner>, Pauseable
 	{
 		public GameObject asteroidPrefab;
 		public int numOfRoidsToSpawn = 10;
@@ -15,35 +15,42 @@ namespace Asteroids
 		public float normalRoidScale = 1.0f;
 		public float smallRoidScale = 0.5f;
 		public float tinyRoidScale = 0.25f;
-
-		private void Start()
-		{
-			Restart();
-		}
+		public bool isPaused = false;
 
 		private void Update()
 		{
-			List<Asteroid> allRoids = FindObjectsOfType<Asteroid>().ToList();
-			int largeRoidCount = 0;
-			foreach(var iRoid in allRoids)
+			if(!isPaused)
 			{
-				if(iRoid.size == AsteroidSize.LARGE)
+				List<Asteroid> allRoids = FindObjectsOfType<Asteroid>().ToList();
+				var largeRoidCount = 0;
+				foreach(var iRoid in allRoids)
 				{
-					largeRoidCount++;
+					if(iRoid.size == AsteroidSize.LARGE)
+					{
+						largeRoidCount++;
+					}
 				}
-			}
 
-			if(largeRoidCount < minLargeRoids)
-			{
-				for(int i = 0; i < minLargeRoids - largeRoidCount; i++)
+				if(largeRoidCount < minLargeRoids)
 				{
-					Spawn();
+					for(var i = 0; i < minLargeRoids - largeRoidCount; i++)
+					{
+						Spawn();
+					}
 				}
 			}
 		}
 
 		public void Restart()
 		{
+			//Clear all the bullets in the game. TODO: this should be in a different class, less mom's sphagetti code
+			List<Bullet> allBullets = FindObjectsOfType<Bullet>().ToList();
+			foreach(Bullet iBullet in allBullets)
+			{
+				Destroy(iBullet.gameObject);
+			}
+			allBullets.Clear();
+
 			foreach(var iRoid in FindObjectsOfType<Asteroid>())
 			{
 				Destroy(iRoid.gameObject);
@@ -53,7 +60,7 @@ namespace Asteroids
 			Vector3 startPos = Camera.main.ViewportToWorldPoint(Extensions.OutsideOfUnitBox());
 			Spawn(startPos, (FindObjectOfType<Ship>().transform.position - startPos).normalized * 50f, AsteroidSize.LARGE);
 
-			for(int i = 0; i < numOfRoidsToSpawn - 1; i++)
+			for(var i = 0; i < numOfRoidsToSpawn - 1; i++)
 			{
 				Spawn();
 			}
@@ -101,5 +108,19 @@ namespace Asteroids
 
 			return normalRoidScale;
 		}
+
+		#region Pauseable
+
+		public void OnPause()
+		{
+			isPaused = true;
+		}
+
+		public void OnUnpause()
+		{
+			isPaused = false;
+		}
+
+		#endregion
 	}
 }

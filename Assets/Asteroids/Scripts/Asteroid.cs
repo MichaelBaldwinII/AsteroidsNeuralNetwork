@@ -1,11 +1,14 @@
-﻿using Baldwin.AI;
+﻿using Baldwin;
+using Baldwin.AI;
 using UnityEngine;
 
 namespace Asteroids
 {
-	public class Asteroid : MonoBehaviour
+	public class Asteroid : MonoBehaviour, Pauseable
 	{
 		public AsteroidSize size;
+		private Vector2 storedVelocity;
+		private float storedAngularVelocity;
 
 		private void OnBecameInvisible()
 		{
@@ -61,5 +64,29 @@ namespace Asteroids
 					break;
 			}
 		}
+
+		//Have to do this to prevent errors when stopping play in the editor
+		private void OnApplicationQuit()
+		{
+			gameObject.Disable();
+		}
+
+		#region Pauseable
+
+		public void OnPause()
+		{
+			storedVelocity = GetComponent<Rigidbody2D>().velocity;
+			storedAngularVelocity = GetComponent<Rigidbody2D>().angularVelocity;
+			GetComponent<Rigidbody2D>().simulated = false;
+		}
+
+		public void OnUnpause()
+		{
+			GetComponent<Rigidbody2D>().simulated = true;
+			GetComponent<Rigidbody2D>().velocity = storedVelocity;
+			GetComponent<Rigidbody2D>().angularVelocity = storedAngularVelocity;
+		}
+
+		#endregion
 	}
 }

@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
+using Baldwin;
 using Baldwin.AI;
 using UnityEngine;
 
 namespace Asteroids
 {
-	public class ComputerPlayer : MonoBehaviour
+	public class ComputerPlayer : MonoBehaviour, Pauseable
 	{
 		public NeuralNetwork brain;
 		public bool drawRays = false;
+		public bool isPaused = false;
 		private Ship ship;
 
 		private void Start()
@@ -17,7 +19,8 @@ namespace Asteroids
 
 		private void Update()
 		{
-			ProcessOutputs(brain.Process(GetInputs()));
+			if(!isPaused)
+				ProcessOutputs(brain.Process(GetInputs()));
 		}
 
 		private List<float> GetInputs()
@@ -47,7 +50,7 @@ namespace Asteroids
 			for(int i = 0; i < 360; i++)
 			{
 				rays.Add(new Ray2D(ship.transform.position, Quaternion.AngleAxis(i, Vector3.forward) * ship.transform.right));
-			}//*/
+			} //*/
 
 			/*List<Ray2D> rays = new List<Ray2D>
 			{
@@ -113,5 +116,19 @@ namespace Asteroids
 				ship.Fire();
 			}
 		}
+
+		#region Pauseable
+
+		public void OnPause()
+		{
+			isPaused = true;
+		}
+
+		public void OnUnpause()
+		{
+			isPaused = false;
+		}
+
+		#endregion
 	}
 }

@@ -1,10 +1,13 @@
-﻿using UnityEngine;
+﻿using Baldwin;
+using UnityEngine;
 
 namespace Asteroids
 {
-	public class Bullet : MonoBehaviour
+	public class Bullet : MonoBehaviour, Pauseable
 	{
 		public float lifeSpan = 1.5f;
+		private Vector2 storedVelocity;
+		private float storedAngularVelocity;
 
 		private void Start()
 		{
@@ -30,5 +33,23 @@ namespace Asteroids
 		{
 			Destroy(gameObject);
 		}
+
+		#region Pauseable
+
+		public void OnPause()
+		{
+			storedVelocity = GetComponent<Rigidbody2D>().velocity;
+			storedAngularVelocity = GetComponent<Rigidbody2D>().angularVelocity;
+			GetComponent<Rigidbody2D>().simulated = false;
+		}
+
+		public void OnUnpause()
+		{
+			GetComponent<Rigidbody2D>().simulated = true;
+			GetComponent<Rigidbody2D>().velocity = storedVelocity;
+			GetComponent<Rigidbody2D>().angularVelocity = storedAngularVelocity;
+		}
+
+		#endregion
 	}
 }

@@ -1,9 +1,11 @@
-﻿using Baldwin.AI;
+﻿using Baldwin;
+using Baldwin.AI;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Asteroids
 {
-	public class Ship : MonoBehaviour
+	public class Ship : MonoBehaviour, Pauseable
 	{
 		[Header("Prefabs & Refs")]
 		public GameObject bulletPrefab;
@@ -16,26 +18,41 @@ namespace Asteroids
 		private float lastShotTime;
 		private Vector3 lastPos;
 
+		[Header("Events")]
+		public UnityEvent onShipCollisionEvent;
+
+		[Header("Runtime")]
+		public bool isPaused = false;
+
 		private void Update()
 		{
-			thrustGobject.SetActive(!transform.position.Equals(lastPos));
-			lastPos = transform.position;
+			if(!isPaused)
+			{
+				thrustGobject.SetActive(!transform.position.Equals(lastPos));
+				lastPos = transform.position;
+			}
 		}
 
 		public void Thrust()
 		{
-			transform.Translate(transform.up * moveSpeed * Time.deltaTime, Space.World);
-			GenManager.Instance.AddFitness(Time.deltaTime);
+			if(!isPaused)
+			{
+				transform.Translate(transform.up * moveSpeed * Time.deltaTime, Space.World);
+				GenManager.Instance.AddFitness(Time.deltaTime);
+			}
 		}
 
 		public void Rotate(bool inPosDir)
 		{
-			transform.Rotate(0, 0, rotationSpeed * (inPosDir ? 1 : -1) * Time.deltaTime, Space.World);
+			if(!isPaused)
+			{
+				transform.Rotate(0, 0, rotationSpeed * (inPosDir ? 1 : -1) * Time.deltaTime, Space.World);
+			}
 		}
 
 		public void Fire()
 		{
-			if(Time.time - lastShotTime >= reloadSpeed)
+			if(!isPaused && Time.time - lastShotTime >= reloadSpeed)
 			{
 				GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
 				bullet.GetComponent<Rigidbody2D>().AddForce(transform.up * 300);
@@ -61,14 +78,35 @@ namespace Asteroids
 
 		private void OnCollisionEnter2D(Collision2D other)
 		{
-			GenManager.Instance.OnShipCollision();
 			ResetShip();
+			onShipCollisionEvent.Invoke();
 		}
 
 		public void ResetShip()
 		{
 			transform.position = Vector3.zero;
 			transform.rotation = Quaternion.identity;
+			OnUnpause();
 		}
+
+		//Have to do this to prevent errors when stopping play in the editor
+		private void OnApplicationQuit()
+		{
+			gameObject.Disable();
+		}
+
+		#region Pauseable
+
+		public void OnPause()
+		{
+			isPaused = true;
+		}
+
+		public void OnUnpause()
+		{
+			isPaused = false;
+		}
+
+		#endregion
 	}
 }

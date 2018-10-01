@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Asteroids;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace Baldwin.AI
 {
@@ -18,116 +17,84 @@ namespace Baldwin.AI
 
 		[Header("Gen Control")]
 		public int numPerGen = 10;
-		//public float timeBetweenInadequencyChecks = 5.0f;
-		private float currentScore;
-		private int currentGenNumber;
-		private readonly List<NeuralNetwork> neuralNetworks = new List<NeuralNetwork>();
+		public NeuralNetwork CurrentNN { get; private set; }
+		public float CurrentFitness { get; private set; }
+		public int CurrentGenNumber { get; private set; }
+		public int Index { get; private set; }
+		private List<NeuralNetwork> neuralNetworks = new List<NeuralNetwork>();
 
-		[Header("Rendering")]
-		public Text genText;
-		public GameObject currentGenTextPrefab;
-		public GameObject scrollViewContent;
-		private Text currentRunText;
-		private int index;
-		private NeuralNetwork lastGenWinner;
-
-		//private float lastTimeCheck;
-		//private float lastScore;
+		[Header("Events")]
+		public UnityEvent onNextNetworkEvent;
+		public UnityEvent onNextGenerationEvent;
 
 		public void AddFitness(float amount)
 		{
-			currentScore += amount;
+			CurrentFitness += amount;
+		}
+
+		public void SetNumOfInputs(string value)
+		{
+			numOfInputs = int.Parse(value);
+		}
+
+		public void SetNumOfHiddenNodes(string value)
+		{
+			numOfHiddenMatrices = int.Parse(value);
+		}
+
+		public void SetNumPerGen(string value)
+		{
+			numPerGen = int.Parse(value);
 		}
 
 		private void Start()
 		{
-			currentGenNumber = 1;
-			index = 0;
-			currentRunText = Instantiate(currentGenTextPrefab, scrollViewContent.transform).GetOrAddComponent<Text>();
-			//lastTimeCheck = Time.time;
+			CurrentGenNumber = 1;
+			Index = 0;
+			CurrentFitness = 0;
 
 			//Populate the first generation
-			for(int i = 0; i < numPerGen; i++)
+			for(var i = 0; i < numPerGen; i++)
 			{
 				neuralNetworks.Add(new NeuralNetwork(numOfInputs, numOfHiddenMatrices, numOfHiddenNodes, numOfOutputs));
 			}
 
-			currentScore = 0;
-		}
-
-		private void Update()
-		{
-			/*if(Time.time - lastTimeCheck > timeBetweenInadequencyChecks)
-			{
-				if(Mathf.Approximately(currentScore, lastScore))
-				{
-					//Ship is just sitting still we need to remove it
-					Next();
-				}
-				lastTimeCheck = Time.time;
-				lastScore = 0;
-			}*/
-
-			neuralNetworks[index].fitness = currentScore;
-			comPlayer.brain = neuralNetworks[index];
-
-			currentRunText.text = (index + 1) + ": " + neuralNetworks[index].fitness;
-			currentRunText.color = Color.magenta;
-			genText.text = "Gen: " + currentGenNumber;
+			CurrentNN = neuralNetworks[0];
+			comPlayer.brain = CurrentNN;
 		}
 
 		public void Next()
 		{
-			AsteroidSpawner.Instance.Restart();
-			currentScore = 0;
-			index++;
-			FindObjectOfType<Ship>().ResetShip();
-			//lastTimeCheck = Time.time;
-			//lastScore = 0;
-			List<Bullet> allBullets = FindObjectsOfType<Bullet>().ToList();
-			foreach(Bullet iBullet in allBullets)
-			{
-				Destroy(iBullet.gameObject);
-			}
-			allBullets.Clear();
+			CurrentNN.fitness = CurrentFitness;
+			Index++;
 
-			if(index >= neuralNetworks.Count)
+			if(Index >= numPerGen)
 			{
-				//Debug.Log("we have reached the end of the first gen.");
 				neuralNetworks.Sort();
 				neuralNetworks.Reverse();
-				if(lastGenWinner != null)
-				{
-					NeuralNetwork.SaveToFile(lastGenWinner, "Gen_" + currentGenNumber + "_Winner_" + lastGenWinner.fitness);
-				}
-				lastGenWinner = neuralNetworks[0];
-				//Pop new gen using old gen winner
+				NeuralNetwork lastGenWinner = neuralNetworks[0];
+				NeuralNetwork.SaveToFile(lastGenWinner, "Gen_" + CurrentGenNumber + "_Winner_" + lastGenWinner.fitness);
 				neuralNetworks.Clear();
-				for(int i = 0; i < numPerGen; i++)
+				for(var i = 0; i < numPerGen; i++)
 				{
-					neuralNetworks.Add(new NeuralNetwork(lastGenWinner));
-					neuralNetworks[i].Mutate(mutationPercent);
+					NeuralNetwork network = new NeuralNetwork(lastGenWinner);
+					network.Mutate(mutationPercent);
+					neuralNetworks.Add(network);
 				}
-				index = 0;
-				currentGenNumber++;
-				foreach(Transform iChild in scrollViewContent.transform)
-				{
-					Destroy(iChild.gameObject);
-				}
+				Index = 0;
+				CurrentGenNumber++;
+				CurrentNN = neuralNetworks[Index];
+				comPlayer.brain = CurrentNN;
+				CurrentFitness = 0;
+				onNextGenerationEvent.Invoke();
 			}
-
-			currentRunText.color = Color.white;
-			currentRunText = Instantiate(currentGenTextPrefab, scrollViewContent.transform).GetOrAddComponent<Text>();
-		}
-
-		public void OnShipCollision()
-		{
-			Next();
-		}
-
-		public void SaveLatestWinner()
-		{
-			NeuralNetwork.SaveToFile(lastGenWinner, "LatestWinner_" + lastGenWinner.fitness);
+			else
+			{
+				CurrentNN = neuralNetworks[Index];
+				comPlayer.brain = CurrentNN;
+				CurrentFitness = 0;
+				onNextNetworkEvent.Invoke();
+			}
 		}
 	}
 }
