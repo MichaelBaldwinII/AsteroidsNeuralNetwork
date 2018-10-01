@@ -24,6 +24,27 @@ namespace Asteroids
 		[Header("Runtime")]
 		public bool isPaused = false;
 
+		public void SetShipMoveSpeed(string value)
+		{
+			moveSpeed = float.Parse(value);
+		}
+
+		public void SetShipRotationSpeed(string value)
+		{
+			rotationSpeed = float.Parse(value);
+		}
+
+		public void SetShipReloadSpeed(string value)
+		{
+			reloadSpeed = float.Parse(value);
+		}
+
+		public void SetBulletPrefabLifeTime(string value)
+		{
+			if(bulletPrefab != null)
+				bulletPrefab.GetComponent<Bullet>().lifeSpan = float.Parse(value);
+		}
+
 		private void Update()
 		{
 			if(!isPaused)

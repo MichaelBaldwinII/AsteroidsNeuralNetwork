@@ -37,9 +37,14 @@ namespace Baldwin.AI
 			numOfInputs = int.Parse(value);
 		}
 
-		public void SetNumOfHiddenNodes(string value)
+		public void SetNumOfHiddenMatrices(string value)
 		{
 			numOfHiddenMatrices = int.Parse(value);
+		}
+
+		public void SetMutationChance(string value)
+		{
+			mutationPercent = int.Parse(value) / 100.0f;
 		}
 
 		public void SetNumPerGen(string value)

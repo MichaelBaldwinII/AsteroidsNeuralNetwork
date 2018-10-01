@@ -17,6 +17,16 @@ namespace Asteroids
 		public float tinyRoidScale = 0.25f;
 		public bool isPaused = false;
 
+		public void SetMinLargeRoids(string value)
+		{
+			minLargeRoids = int.Parse(value);
+		}
+
+		public void SetInitialRoidCount(string value)
+		{
+			numOfRoidsToSpawn = int.Parse(value);
+		}
+
 		private void Update()
 		{
 			if(!isPaused)
