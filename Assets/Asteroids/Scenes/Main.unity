@@ -3401,7 +3401,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1113521812}
-        m_MethodName: PauseAllPausables
+        m_MethodName: OnMenuButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5639,7 +5639,6 @@ MonoBehaviour:
   normalRoidScale: 1
   smallRoidScale: 0.5
   tinyRoidScale: 0.25
-  isPaused: 0
 --- !u!224 &1923675994 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224556146388041100, guid: c6683733c5f3491428d9345ce7a6919f,
@@ -6030,7 +6029,7 @@ MonoBehaviour:
           m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 1113521812}
-        m_MethodName: UnPauseAllPausables
+        m_MethodName: OnResumeButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

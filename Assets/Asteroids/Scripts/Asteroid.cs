@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Asteroids
 {
-	public class Asteroid : MonoBehaviour, Pauseable
+	public class Asteroid : MonoBehaviour
 	{
 		public AsteroidSize size;
 		private Vector2 storedVelocity;
@@ -70,23 +70,5 @@ namespace Asteroids
 		{
 			gameObject.Disable();
 		}
-
-		#region Pauseable
-
-		public void OnPause()
-		{
-			storedVelocity = GetComponent<Rigidbody2D>().velocity;
-			storedAngularVelocity = GetComponent<Rigidbody2D>().angularVelocity;
-			GetComponent<Rigidbody2D>().simulated = false;
-		}
-
-		public void OnUnpause()
-		{
-			GetComponent<Rigidbody2D>().simulated = true;
-			GetComponent<Rigidbody2D>().velocity = storedVelocity;
-			GetComponent<Rigidbody2D>().angularVelocity = storedAngularVelocity;
-		}
-
-		#endregion
 	}
 }

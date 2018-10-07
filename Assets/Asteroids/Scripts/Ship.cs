@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace Asteroids
 {
-	public class Ship : MonoBehaviour, Pauseable
+	public class Ship : MonoBehaviour
 	{
 		[Header("Prefabs & Refs")]
 		public GameObject bulletPrefab;
@@ -20,9 +20,6 @@ namespace Asteroids
 
 		[Header("Events")]
 		public UnityEvent onShipCollisionEvent;
-
-		[Header("Runtime")]
-		public bool isPaused = false;
 
 		public void SetShipMoveSpeed(string value)
 		{
@@ -47,33 +44,24 @@ namespace Asteroids
 
 		private void Update()
 		{
-			if(!isPaused)
-			{
-				thrustGobject.SetActive(!transform.position.Equals(lastPos));
-				lastPos = transform.position;
-			}
+			thrustGobject.SetActive(!transform.position.Equals(lastPos));
+			lastPos = transform.position;
 		}
 
 		public void Thrust()
 		{
-			if(!isPaused)
-			{
-				transform.Translate(transform.up * moveSpeed * Time.deltaTime, Space.World);
-				GenManager.Instance.AddFitness(Time.deltaTime);
-			}
+			transform.Translate(transform.up * moveSpeed * Time.deltaTime, Space.World);
+			GenManager.Instance.AddFitness(Time.deltaTime);
 		}
 
 		public void Rotate(bool inPosDir)
 		{
-			if(!isPaused)
-			{
-				transform.Rotate(0, 0, rotationSpeed * (inPosDir ? 1 : -1) * Time.deltaTime, Space.World);
-			}
+			transform.Rotate(0, 0, rotationSpeed * (inPosDir ? 1 : -1) * Time.deltaTime, Space.World);
 		}
 
 		public void Fire()
 		{
-			if(!isPaused && Time.time - lastShotTime >= reloadSpeed)
+			if(Time.time - lastShotTime >= reloadSpeed)
 			{
 				GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
 				bullet.GetComponent<Rigidbody2D>().AddForce(transform.up * 300);
@@ -107,7 +95,6 @@ namespace Asteroids
 		{
 			transform.position = Vector3.zero;
 			transform.rotation = Quaternion.identity;
-			OnUnpause();
 		}
 
 		//Have to do this to prevent errors when stopping play in the editor
@@ -115,19 +102,5 @@ namespace Asteroids
 		{
 			gameObject.Disable();
 		}
-
-		#region Pauseable
-
-		public void OnPause()
-		{
-			isPaused = true;
-		}
-
-		public void OnUnpause()
-		{
-			isPaused = false;
-		}
-
-		#endregion
 	}
 }

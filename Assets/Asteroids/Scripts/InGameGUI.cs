@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Baldwin;
 using Baldwin.AI;
 using UnityEngine;
@@ -40,6 +38,16 @@ namespace Asteroids
 			currentRunText = Instantiate(currentGenTextPrefab, scrollViewContent.transform).GetOrAddComponent<Text>();
 		}
 
+		public void OnResumeButton()
+		{
+			Time.timeScale = 1;
+		}
+
+		public void OnMenuButton()
+		{
+			Time.timeScale = 0;
+		}
+
 		public void OnNextGeneration()
 		{
 			foreach(Transform iChild in scrollViewContent.transform)
@@ -49,24 +57,6 @@ namespace Asteroids
 
 			currentRunText.color = Color.white;
 			currentRunText = Instantiate(currentGenTextPrefab, scrollViewContent.transform).GetOrAddComponent<Text>();
-		}
-
-		public void PauseAllPausables()
-		{
-			List<Pauseable> allPausables = FindObjectsOfType<MonoBehaviour>().OfType<Pauseable>().ToList();
-			foreach(var iPauseable in allPausables)
-			{
-				iPauseable.OnPause();
-			}
-		}
-
-		public void UnPauseAllPausables()
-		{
-			List<Pauseable> allPausables = FindObjectsOfType<MonoBehaviour>().OfType<Pauseable>().ToList();
-			foreach(var iPauseable in allPausables)
-			{
-				iPauseable.OnUnpause();
-			}
 		}
 	}
 }

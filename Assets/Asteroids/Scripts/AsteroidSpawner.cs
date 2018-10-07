@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Asteroids
 {
-	public class AsteroidSpawner : Singleton<AsteroidSpawner>, Pauseable
+	public class AsteroidSpawner : Singleton<AsteroidSpawner>
 	{
 		public GameObject asteroidPrefab;
 		public int numOfRoidsToSpawn = 10;
@@ -15,7 +15,6 @@ namespace Asteroids
 		public float normalRoidScale = 1.0f;
 		public float smallRoidScale = 0.5f;
 		public float tinyRoidScale = 0.25f;
-		public bool isPaused = false;
 
 		public void SetMinLargeRoids(string value)
 		{
@@ -29,24 +28,21 @@ namespace Asteroids
 
 		private void Update()
 		{
-			if(!isPaused)
+			List<Asteroid> allRoids = FindObjectsOfType<Asteroid>().ToList();
+			var largeRoidCount = 0;
+			foreach(var iRoid in allRoids)
 			{
-				List<Asteroid> allRoids = FindObjectsOfType<Asteroid>().ToList();
-				var largeRoidCount = 0;
-				foreach(var iRoid in allRoids)
+				if(iRoid.size == AsteroidSize.LARGE)
 				{
-					if(iRoid.size == AsteroidSize.LARGE)
-					{
-						largeRoidCount++;
-					}
+					largeRoidCount++;
 				}
+			}
 
-				if(largeRoidCount < minLargeRoids)
+			if(largeRoidCount < minLargeRoids)
+			{
+				for(var i = 0; i < minLargeRoids - largeRoidCount; i++)
 				{
-					for(var i = 0; i < minLargeRoids - largeRoidCount; i++)
-					{
-						Spawn();
-					}
+					Spawn();
 				}
 			}
 		}
@@ -118,19 +114,5 @@ namespace Asteroids
 
 			return normalRoidScale;
 		}
-
-		#region Pauseable
-
-		public void OnPause()
-		{
-			isPaused = true;
-		}
-
-		public void OnUnpause()
-		{
-			isPaused = false;
-		}
-
-		#endregion
 	}
 }
