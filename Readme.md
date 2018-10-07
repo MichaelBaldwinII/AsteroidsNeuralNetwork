@@ -1,3 +1,5 @@
+[Playable WEBGL Release](https://mikebaldwin21.github.io/AsteroidsNeuralNetwork/)
+
 [LATEST RELEASE](https://github.com/MikeBaldwin21/Asteroids-Neural-Network/releases/latest)
 
 
