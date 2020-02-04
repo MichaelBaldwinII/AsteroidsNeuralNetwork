@@ -71,6 +71,7 @@ namespace Baldwin.AI
 
 			CurrentNN = neuralNetworks[0];
 			comPlayer.brain = CurrentNN;
+			onNextGenerationEvent.AddListener(AsteroidSpawner.Instance.Restart);
 		}
 
 		public void Next()
