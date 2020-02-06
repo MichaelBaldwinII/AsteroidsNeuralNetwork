@@ -1,6 +1,4 @@
-﻿using Baldwin;
-using Baldwin.AI;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 
 namespace Asteroids
@@ -67,21 +65,6 @@ namespace Asteroids
 				bullet.GetComponent<Rigidbody2D>().AddForce(transform.up * 300);
 				lastShotTime = Time.time;
 				GenManager.Instance.AddFitness(-1);
-			}
-		}
-
-		private void OnBecameInvisible()
-		{
-			Vector2 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
-
-			if(viewportPos.x < 0 || viewportPos.x > 1)
-			{
-				transform.position = new Vector2(-transform.position.x, transform.position.y);
-			}
-
-			if(viewportPos.y < 0 || viewportPos.y > 1)
-			{
-				transform.position = new Vector2(transform.position.x, -transform.position.y);
 			}
 		}
 

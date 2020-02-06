@@ -1,74 +1,65 @@
-﻿using Baldwin;
-using Baldwin.AI;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Asteroids
 {
 	public class Asteroid : MonoBehaviour
 	{
-		public AsteroidSize size;
-		private Vector2 storedVelocity;
-		private float storedAngularVelocity;
-
-		private void OnBecameInvisible()
-		{
-			Vector2 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
-
-			if(viewportPos.x < 0 || viewportPos.x > 1)
-			{
-				transform.position = new Vector2(-transform.position.x, transform.position.y);
-			}
-
-			if(viewportPos.y < 0 || viewportPos.y > 1)
-			{
-				transform.position = new Vector2(transform.position.x, -transform.position.y);
-			}
-		}
+		public RoidSize size;
 
 		private void OnCollisionEnter2D(Collision2D other)
 		{
-			if(other != null && other.gameObject.name == "Ship")
-			{
+			if (other != null && other.gameObject.name == "Ship")
 				return;
-			}
 
-			switch(size)
+			var roidSize = RoidSize.Normal;
+			var fitnessAmt = 0;
+
+			switch (size)
 			{
-				case AsteroidSize.LARGE:
-					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.MEDIUM);
-					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.MEDIUM);
-					Destroy(gameObject);
-					GenManager.Instance.AddFitness(3);
+				case RoidSize.Tiny: //If tiny size, then we just disappear
+					fitnessAmt = 50;
 					break;
-				case AsteroidSize.MEDIUM:
-					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.NORMAL);
-					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.NORMAL);
-					Destroy(gameObject);
-					GenManager.Instance.AddFitness(5);
+				case RoidSize.Small:
+					roidSize = RoidSize.Tiny;
+					fitnessAmt = 25;
 					break;
-				case AsteroidSize.NORMAL:
-					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.SMALL);
-					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.SMALL);
-					Destroy(gameObject);
-					GenManager.Instance.AddFitness(10);
+				case RoidSize.Normal:
+					roidSize = RoidSize.Small;
+					fitnessAmt = 10;
 					break;
-				case AsteroidSize.SMALL:
-					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.TINY);
-					AsteroidSpawner.Instance.Spawn(transform.position, AsteroidSize.TINY);
-					Destroy(gameObject);
-					GenManager.Instance.AddFitness(25);
+				case RoidSize.Medium:
+					roidSize = RoidSize.Normal;
+					fitnessAmt = 5;
 					break;
-				case AsteroidSize.TINY: //If tiny size, then we just disappear
-					Destroy(gameObject);
-					GenManager.Instance.AddFitness(50);
+				case RoidSize.Large:
+					roidSize = RoidSize.Medium;
+					fitnessAmt = 3;
 					break;
 			}
+			
+			if (size != RoidSize.Tiny)
+			{
+				AsteroidSpawner.Instance.Spawn(transform.position, roidSize);
+				AsteroidSpawner.Instance.Spawn(transform.position, roidSize);
+				GenManager.Instance.AddFitness(fitnessAmt);
+			}
+			
+			Destroy(gameObject);
 		}
 
 		//Have to do this to prevent errors when stopping play in the editor
 		private void OnApplicationQuit()
 		{
 			gameObject.Disable();
+		}
+
+		public enum RoidSize
+		{
+			Tiny,
+			Small,
+			Normal,
+			Medium,
+			Large
 		}
 	}
 }

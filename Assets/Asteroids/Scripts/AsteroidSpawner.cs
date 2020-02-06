@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Baldwin;
 using UnityEngine;
 
 namespace Asteroids
@@ -32,7 +31,7 @@ namespace Asteroids
 			var largeRoidCount = 0;
 			foreach(var iRoid in allRoids)
 			{
-				if(iRoid.size == AsteroidSize.LARGE)
+				if(iRoid.size == Asteroid.RoidSize.Large)
 				{
 					largeRoidCount++;
 				}
@@ -64,7 +63,7 @@ namespace Asteroids
 
 			//Spawn the first one towards the ship
 			Vector3 startPos = Camera.main.ViewportToWorldPoint(Extensions.OutsideOfUnitBox());
-			Spawn(startPos, (FindObjectOfType<Ship>().transform.position - startPos).normalized * 50f, AsteroidSize.LARGE);
+			Spawn(startPos, (FindObjectOfType<Ship>().transform.position - startPos).normalized * 50f, Asteroid.RoidSize.Large);
 
 			for(var i = 0; i < numOfRoidsToSpawn - 1; i++)
 			{
@@ -75,10 +74,10 @@ namespace Asteroids
 		public void Spawn()
 		{
 			Vector3 startPos = Camera.main.ViewportToWorldPoint(Extensions.OutsideOfUnitBox());
-			Spawn(startPos, AsteroidSize.LARGE);
+			Spawn(startPos, Asteroid.RoidSize.Large);
 		}
 
-		public void Spawn(Vector2 pos, AsteroidSize size)
+		public void Spawn(Vector2 pos, Asteroid.RoidSize size)
 		{
 			Asteroid asteroid = Instantiate(asteroidPrefab, pos, Quaternion.identity).GetComponent<Asteroid>();
 			asteroid.size = size;
@@ -87,7 +86,7 @@ namespace Asteroids
 			asteroid.GetComponent<Rigidbody2D>().AddTorque(3);
 		}
 
-		public void Spawn(Vector2 pos, Vector2 dir, AsteroidSize size)
+		public void Spawn(Vector2 pos, Vector2 dir, Asteroid.RoidSize size)
 		{
 			Asteroid asteroid = Instantiate(asteroidPrefab, pos, Quaternion.identity).GetComponent<Asteroid>();
 			asteroid.size = size;
@@ -96,19 +95,19 @@ namespace Asteroids
 			asteroid.GetComponent<Rigidbody2D>().AddTorque(3);
 		}
 
-		public float GetScaleFromSize(AsteroidSize size)
+		public float GetScaleFromSize(Asteroid.RoidSize size)
 		{
 			switch(size)
 			{
-				case AsteroidSize.LARGE:
+				case Asteroid.RoidSize.Large:
 					return largeRoidScale;
-				case AsteroidSize.MEDIUM:
+				case Asteroid.RoidSize.Medium:
 					return mediumRoidScale;
-				case AsteroidSize.NORMAL:
+				case Asteroid.RoidSize.Normal:
 					return normalRoidScale;
-				case AsteroidSize.SMALL:
+				case Asteroid.RoidSize.Small:
 					return smallRoidScale;
-				case AsteroidSize.TINY:
+				case Asteroid.RoidSize.Tiny:
 					return tinyRoidScale;
 			}
 
