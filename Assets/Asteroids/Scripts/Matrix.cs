@@ -8,42 +8,53 @@ namespace Asteroids
 	[Serializable]
 	public class Matrix
 	{
-		public readonly int numOfRows;
-		public readonly int numOfColumns;
-		public readonly List<float> values;
+		public int RowCount { get; private set; }
+		public int ColumnCount { get; private set; }
+		private readonly List<float> values;
 
 		public Matrix()
 		{
-			numOfRows = 0;
-			numOfColumns = 0;
+			RowCount = 0;
+			ColumnCount = 0;
 			values = new List<float>();
 		}
 
 		public Matrix(Matrix mat)
 		{
-			numOfRows = mat.numOfRows;
-			numOfColumns = mat.numOfColumns;
+			RowCount = mat.RowCount;
+			ColumnCount = mat.ColumnCount;
 			values = new List<float>(mat.values);
 		}
 
-		public Matrix(int numOfRows, int numOfColumns)
+		public Matrix(int rowCount, int columnCount)
 		{
-			this.numOfRows = numOfRows;
-			this.numOfColumns = numOfColumns;
-			values = new List<float>(this.numOfRows * this.numOfColumns);
-			for(var i = 0; i < this.numOfRows * this.numOfColumns; i++)
+			RowCount = rowCount;
+			ColumnCount = columnCount;
+			values = new List<float>(RowCount * ColumnCount);
+			for(var i = 0; i < RowCount * ColumnCount; i++)
 				values.Add(0);
 		}
 
 		public Matrix(List<float> valueList)
 		{
-			numOfRows = valueList.Count;
-			numOfColumns = 1;
-			values = new List<float>(numOfRows * numOfColumns);
+			RowCount = valueList.Count;
+			ColumnCount = 1;
+			values = new List<float>(RowCount * ColumnCount);
 
-			for(var i = 0; i < numOfColumns; i++)
+			for(var i = 0; i < ColumnCount; i++)
 			{
-				for(var j = 0; j < numOfRows; j++)
+				for(var j = 0; j < RowCount; j++)
+				{
+					values.Add(valueList[i]);
+				}
+			}
+		}
+
+		public void SetValues(List<float> valueList)
+		{
+			for(var i = 0; i < ColumnCount; i++)
+			{
+				for(var j = 0; j < RowCount; j++)
 				{
 					values.Add(valueList[i]);
 				}
@@ -52,31 +63,31 @@ namespace Asteroids
 
 		public float this[int i, int j]
 		{
-			get { return values[j * numOfRows + i]; }
-			set { values[j * numOfRows + i] = value; }
+			get => values[j * RowCount + i];
+			set => values[j * RowCount + i] = value;
 		}
 
 		public List<float> GetRow(int i)
 		{
-			List<float> row = new List<float>(numOfColumns);
-			for(var j = 0; j < numOfColumns; j++)
+			var row = new List<float>(ColumnCount);
+			for(var j = 0; j < ColumnCount; j++)
 				row.Add(this[i, j]);
 			return row;
 		}
 
 		public List<float> GetColumn(int j)
 		{
-			List<float> row = new List<float>(numOfRows);
-			for(var i = 0; i < numOfRows; i++)
+			var row = new List<float>(RowCount);
+			for(var i = 0; i < RowCount; i++)
 				row.Add(this[i, j]);
 			return row;
 		}
 
 		public void Randomize()
 		{
-			for(var i = 0; i < numOfColumns; i++)
+			for(var i = 0; i < ColumnCount; i++)
 			{
-				for(var j = 0; j < numOfRows; j++)
+				for(var j = 0; j < RowCount; j++)
 				{
 					this[i, j] = Random.Range(-1.0f, 1.0f);
 				}
@@ -85,9 +96,9 @@ namespace Asteroids
 
 		public void Sigmoid()
 		{
-			for(var i = 0; i < numOfColumns; i++)
+			for(var i = 0; i < ColumnCount; i++)
 			{
-				for(var j = 0; j < numOfRows; j++)
+				for(var j = 0; j < RowCount; j++)
 				{
 					this[i, j] = Extensions.Sigmoid(this[i, j]);
 				}
@@ -96,9 +107,9 @@ namespace Asteroids
 
 		public void Mutate(float percentChance)
 		{
-			for(var i = 0; i < numOfColumns; i++)
+			for(var i = 0; i < ColumnCount; i++)
 			{
-				for(var j = 0; j < numOfRows; j++)
+				for(var j = 0; j < RowCount; j++)
 				{
 					if(Random.value <= percentChance)
 					{
@@ -124,11 +135,11 @@ namespace Asteroids
 
 		public static Matrix operator -(Matrix rhs)
 		{
-			Matrix result = new Matrix(rhs.numOfRows, rhs.numOfColumns);
+			var result = new Matrix(rhs.RowCount, rhs.ColumnCount);
 
-			for(var i = 0; i < rhs.numOfRows; i++)
+			for(var i = 0; i < rhs.RowCount; i++)
 			{
-				for(var j = 0; j < rhs.numOfColumns; j++)
+				for(var j = 0; j < rhs.ColumnCount; j++)
 				{
 					result[i, j] = -rhs[i, j];
 				}
@@ -139,17 +150,17 @@ namespace Asteroids
 
 		public static Matrix operator +(Matrix lhs, Matrix rhs)
 		{
-			if(lhs.numOfRows != rhs.numOfRows || lhs.numOfColumns != rhs.numOfColumns)
+			if(lhs.RowCount != rhs.RowCount || lhs.ColumnCount != rhs.ColumnCount)
 			{
 				Debug.LogError("Cannot subtract two matrices of unequal size!");
 				return lhs;
 			}
 
-			Matrix result = new Matrix(lhs.numOfRows, lhs.numOfColumns);
+			var result = new Matrix(lhs.RowCount, lhs.ColumnCount);
 
-			for(var i = 0; i < lhs.numOfColumns; i++)
+			for(var i = 0; i < lhs.ColumnCount; i++)
 			{
-				for(var j = 0; j < lhs.numOfRows; j++)
+				for(var j = 0; j < lhs.RowCount; j++)
 				{
 					result[i, j] = lhs[i, j] + rhs[i, j];
 				}
@@ -160,7 +171,7 @@ namespace Asteroids
 
 		public static Matrix operator -(Matrix lhs, Matrix rhs)
 		{
-			if(lhs.numOfRows != rhs.numOfRows || lhs.numOfColumns != rhs.numOfColumns)
+			if(lhs.RowCount != rhs.RowCount || lhs.ColumnCount != rhs.ColumnCount)
 			{
 				Debug.LogError("Cannot subtract two matrices of unequal size!");
 				return lhs;
@@ -171,7 +182,7 @@ namespace Asteroids
 
 		public static Matrix operator *(Matrix lhs, Matrix rhs)
 		{
-			if(lhs.numOfRows != rhs.numOfColumns)
+			if(lhs.RowCount != rhs.ColumnCount)
 			{
 				Debug.LogError("To multiply matrices, numOfRows must match numOfColumns!");
 				return lhs;
@@ -192,14 +203,14 @@ namespace Asteroids
 
 			return result;*/
 
-			Matrix result = new Matrix(lhs.numOfRows, rhs.numOfColumns);
+			var result = new Matrix(lhs.RowCount, rhs.ColumnCount);
 
-			for(var i = 0; i < lhs.numOfRows; i++)
+			for(var i = 0; i < lhs.RowCount; i++)
 			{
-				for(var j = 0; j < rhs.numOfColumns; j++)
+				for(var j = 0; j < rhs.ColumnCount; j++)
 				{
-					List<float> row = lhs.GetRow(i);
-					List<float> column = rhs.GetColumn(j);
+					var row = lhs.GetColumn(i);
+					var column = rhs.GetRow(j);
 					result[i, j] = Dot(row, column);
 				}
 			}
