@@ -6,6 +6,7 @@ namespace Asteroids
 	public class InGameGUI : MonoBehaviour
 	{
 		public Text genText;
+		public Text bestFitnessText;
 		public GameObject currentGenTextPrefab;
 		public GameObject scrollViewContent;
 		private Text currentRunText;
@@ -22,6 +23,7 @@ namespace Asteroids
 				currentRunText.text = (GenManager.Instance.Index + 1) + ": " + GenManager.Instance.CurrentFitness;
 				currentRunText.color = Color.magenta;
 				genText.text = "Gen: " + GenManager.Instance.CurrentGenNumber;
+				bestFitnessText.text = "Best: " + (GenManager.Instance.BestNN != null ? GenManager.Instance.BestNN.fitness : 0);
 			}
 		}
 

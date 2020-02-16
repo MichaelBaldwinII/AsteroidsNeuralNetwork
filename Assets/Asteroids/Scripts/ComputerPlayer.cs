@@ -21,47 +21,50 @@ namespace Asteroids
 
 		private List<float> GetInputs()
 		{
-			List<Ray2D> rays = new List<Ray2D>();
-			var stepAmount = 360.0f / (GenManager.Instance.numOfInputs / 2);
+			var rays = new List<Ray2D>();
+			var stepAmount = 360.0f / GenManager.Instance.numOfInputs;
 			for(var i = 0f; i < 360f; i += stepAmount)
 				rays.Add(new Ray2D(ship.transform.position, Quaternion.AngleAxis(i, Vector3.forward) * ship.transform.right));
 
-			List<RaycastHit2D> hits = new List<RaycastHit2D>();
-			foreach(Ray2D iRay in rays)
+			var hits = new List<RaycastHit2D>();
+			foreach(var iRay in rays)
 				hits.Add(Physics2D.Raycast(iRay.origin, iRay.direction, float.MaxValue, LayerMask.GetMask("Asteroids")));
 
 			if(drawRays)
 				for(var i = 0; i < rays.Count; i++)
-					Debug.DrawRay(rays[i].origin, hits[i].distance > 0 ? rays[i].direction * hits[i].distance : rays[i].direction * 100);
+					Debug.DrawRay(rays[i].origin, hits[i].distance > 0 ? rays[i].direction * hits[i].distance : rays[i].direction * 25);
 
 			//Input the collision detected inputs
-			List<float> inputValues = new List<float>();
-			foreach(RaycastHit2D iHit in hits)
-			{
-				inputValues.Add(iHit.collider != null ? 1.0f : 0.0f);
+			var inputValues = new List<float>();
+			foreach(var iHit in hits)
 				inputValues.Add(iHit.distance);
-			}
 
 			return inputValues;
 		}
 
 		private void ProcessOutputs(List<float> outputs)
 		{
-			if(outputs[0] > 0.5f)
+			var largest = 0;
+			for(var i = 0; i < outputs.Count; i++)
+				if (outputs[i] > outputs[largest])
+					largest = i;
+
+			switch (largest)
 			{
-				ship.Thrust();
-			}
-			if(outputs[1] > 0.5f)
-			{
-				ship.Rotate(true);
-			}
-			if(outputs[2] > 0.5f)
-			{
-				ship.Rotate(false);
-			}
-			if(outputs[3] > 0.5f)
-			{
-				ship.Fire();
+				case 0:
+					break;
+				case 1:
+					ship.Fire();
+					break;
+				case 2:
+					ship.Thrust();
+					break;
+				case 3:
+					ship.Rotate(true);
+					break;
+				case 4:
+					ship.Rotate(false);
+					break;
 			}
 		}
 	}

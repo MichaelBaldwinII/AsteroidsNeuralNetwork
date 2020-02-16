@@ -10,6 +10,12 @@ namespace Asteroids
 		{
 			transformRef = transform;
 		}
+
+		//Have to do this to prevent errors when stopping play in the editor
+		private void OnApplicationQuit()
+		{
+			gameObject.Disable();
+		}
 		
 		private void OnBecameInvisible()
 		{

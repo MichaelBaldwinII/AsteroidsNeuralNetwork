@@ -15,11 +15,5 @@ namespace Asteroids
 		{
 			Destroy(gameObject);
 		}
-
-		//Have to do this to prevent errors when stopping play in the editor
-		private void OnApplicationQuit()
-		{
-			gameObject.Disable();
-		}
 	}
 }

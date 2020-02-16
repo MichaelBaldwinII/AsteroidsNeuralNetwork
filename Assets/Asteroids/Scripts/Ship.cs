@@ -48,7 +48,7 @@ namespace Asteroids
 
 		public void Thrust()
 		{
-			transform.Translate(transform.up * moveSpeed * Time.deltaTime, Space.World);
+			transform.Translate(transform.up * (moveSpeed * Time.deltaTime), Space.World);
 			GenManager.Instance.AddFitness(Time.deltaTime);
 		}
 
@@ -61,7 +61,7 @@ namespace Asteroids
 		{
 			if(Time.time - lastShotTime >= reloadSpeed)
 			{
-				GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+				var bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
 				bullet.GetComponent<Rigidbody2D>().AddForce(transform.up * 300);
 				lastShotTime = Time.time;
 				GenManager.Instance.AddFitness(-1);
@@ -78,12 +78,6 @@ namespace Asteroids
 		{
 			transform.position = Vector3.zero;
 			transform.rotation = Quaternion.identity;
-		}
-
-		//Have to do this to prevent errors when stopping play in the editor
-		private void OnApplicationQuit()
-		{
-			gameObject.Disable();
 		}
 	}
 }
