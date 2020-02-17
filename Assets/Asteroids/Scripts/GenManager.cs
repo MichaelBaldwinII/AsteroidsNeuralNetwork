@@ -6,7 +6,7 @@ namespace Asteroids
 {
 	public class GenManager : Singleton<GenManager>
 	{
-		[Header("Neural Network Config")]
+		[Header("Config")]
 		[Tooltip("The number of inputs into each Neural Network, this is also the number of raycasts performed")]
 		public int numOfInputs = 360;
 		[Tooltip("The number of hidden layers each Neural Network has")]
@@ -21,21 +21,21 @@ namespace Asteroids
 		public float mutationPercentStart = 0.05f;
 		[Tooltip("Mutation percentage change per each unsuccessful generation (if the gen doesn't score a higher fitness than the best, it's considered unsuccessful)")]
 		public float mutationPercentChange = 0.01f;
+		[Tooltip("How many iterations per generation")]
+		public int numPerGen = 10;
 		[Tooltip("Computer player")]
 		public ComputerPlayer comPlayer;
 
-		[Header("Gen Control")]
-		public int numPerGen = 10;
+		[Header("Events")]
+		public UnityEvent onNextNetworkEvent;
+		public UnityEvent onNextGenerationEvent;
+
 		public NeuralNetwork CurrentNN { get; private set; }
 		public NeuralNetwork BestNN { get; private set; }
 		public float CurrentFitness { get; private set; }
 		public int CurrentGenNumber { get; private set; }
 		public int Index { get; private set; }
-		private List<NeuralNetwork> neuralNetworks = new List<NeuralNetwork>();
-
-		[Header("Events")]
-		public UnityEvent onNextNetworkEvent;
-		public UnityEvent onNextGenerationEvent;
+		private List<NeuralNetwork> networks = new List<NeuralNetwork>();
 
 		public void AddFitness(float amount)
 		{
@@ -57,10 +57,20 @@ namespace Asteroids
 			numOfHiddenNodesPerLayer = int.Parse(value);
 		}
 
-		public void SetMutationChance(string value)
+		public void SetNumOfOutputs(string value)
+		{
+			numOfOutputs = int.Parse(value);
+		}
+
+		public void SetMutationPercentStart(string value)
 		{
 			mutationPercentStart = int.Parse(value) / 100.0f;
 			mutationPercent = mutationPercentStart;
+		}
+
+		public void SetMutationPercentDelta(string value)
+		{
+			mutationPercentStart = int.Parse(value) / 100.0f;
 		}
 
 		public void SetNumPerGen(string value)
@@ -76,13 +86,10 @@ namespace Asteroids
 
 			// Populate the first generation
 			for(var i = 0; i < numPerGen; i++)
-			{
-				neuralNetworks.Add(new NeuralNetwork(numOfInputs, numOfHiddenLayers, numOfHiddenNodesPerLayer, numOfOutputs));
-			}
+				networks.Add(new NeuralNetwork(numOfInputs, numOfHiddenLayers, numOfHiddenNodesPerLayer, numOfOutputs));
 
-			CurrentNN = neuralNetworks[0];
+			CurrentNN = networks[0];
 			comPlayer.brain = CurrentNN;
-			onNextGenerationEvent.AddListener(AsteroidSpawner.Instance.Restart);
 		}
 
 		public void Next()
@@ -92,35 +99,35 @@ namespace Asteroids
 
 			if(Index >= numPerGen)
 			{
-				neuralNetworks.Sort();
-				neuralNetworks.Reverse();
+				networks.Sort();
+				networks.Reverse();
 
-				if (BestNN == null || neuralNetworks[0].fitness > BestNN.fitness)
+				if (BestNN == null || networks[0].fitness > BestNN.fitness)
 				{
-					BestNN = neuralNetworks[0];
+					BestNN = networks[0];
 					mutationPercent = mutationPercentStart;
 				}
 				else
 					mutationPercent += mutationPercentChange;
 				
 				// NeuralNetwork.SaveToFile(lastGenWinner, "Gen_" + CurrentGenNumber + "_Winner_" + lastGenWinner.fitness);
-				neuralNetworks.Clear();
+				networks.Clear();
 				for(var i = 0; i < numPerGen; i++)
 				{
 					var network = new NeuralNetwork(BestNN);
 					network.Mutate(mutationPercent);
-					neuralNetworks.Add(network);
+					networks.Add(network);
 				}
 				Index = 0;
 				CurrentGenNumber++;
-				CurrentNN = neuralNetworks[Index];
+				CurrentNN = networks[Index];
 				comPlayer.brain = CurrentNN;
 				CurrentFitness = 0;
 				onNextGenerationEvent.Invoke();
 			}
 			else
 			{
-				CurrentNN = neuralNetworks[Index];
+				CurrentNN = networks[Index];
 				comPlayer.brain = CurrentNN;
 				CurrentFitness = 0;
 				onNextNetworkEvent.Invoke();

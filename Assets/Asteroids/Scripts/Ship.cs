@@ -7,17 +7,18 @@ namespace Asteroids
 	{
 		[Header("Prefabs & Refs")]
 		public GameObject bulletPrefab;
-		public GameObject thrustGobject;
+		public GameObject thrustGameObject;
 
 		[Header("Config")]
 		public float moveSpeed = 3.0f;
 		public float rotationSpeed = 100.0f;
 		public float reloadSpeed = 1.0f;
-		private float lastShotTime;
-		private Vector3 lastPos;
 
 		[Header("Events")]
 		public UnityEvent onShipCollisionEvent;
+		
+		private float lastShotTime;
+		private Vector3 lastPos;
 
 		public void SetShipMoveSpeed(string value)
 		{
@@ -42,7 +43,7 @@ namespace Asteroids
 
 		private void Update()
 		{
-			thrustGobject.SetActive(!transform.position.Equals(lastPos));
+			thrustGameObject.SetActive(!transform.position.Equals(lastPos));
 			lastPos = transform.position;
 		}
 
