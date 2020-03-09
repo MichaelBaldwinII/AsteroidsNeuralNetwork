@@ -61,7 +61,7 @@ namespace Asteroids
 				Spawn();
 		}
 
-		public void Spawn()
+		private void Spawn()
 		{
 			var startPos = Camera.main.ViewportToWorldPoint(Extensions.OutsideOfUnitBox());
 			Spawn(startPos, Asteroid.RoidSize.Large);
@@ -72,7 +72,7 @@ namespace Asteroids
 			Spawn(pos, Random.insideUnitCircle.normalized * 50f, size);
 		}
 
-		public void Spawn(Vector2 pos, Vector2 dir, Asteroid.RoidSize size)
+		private void Spawn(Vector2 pos, Vector2 dir, Asteroid.RoidSize size)
 		{
 			var asteroid = Instantiate(asteroidPrefab, pos, Quaternion.identity).GetComponent<Asteroid>();
 			asteroid.size = size;
@@ -81,7 +81,7 @@ namespace Asteroids
 			asteroid.GetComponent<Rigidbody2D>().AddTorque(3);
 		}
 
-		public float GetScaleFromSize(Asteroid.RoidSize size)
+		private float GetScaleFromSize(Asteroid.RoidSize size)
 		{
 			switch (size)
 			{

@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 1155167475438872, guid: 06ef10e6aee3ebe4295415e690ff9365,
     type: 3}
-  thrustGobject: {fileID: 1515782719251430}
+  thrustGameObject: {fileID: 1515782719251430}
   moveSpeed: 3
   rotationSpeed: 100
   reloadSpeed: 1
@@ -170,15 +170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brain:
-    inputLayer:
-      size: 0
-      biases: []
-      values: []
-    hiddenLayers: []
-    outputLayer:
-      size: 0
-      biases: []
-      values: []
+    weights: []
     fitness: 0
   drawRays: 0
 --- !u!114 &3332896638866732458

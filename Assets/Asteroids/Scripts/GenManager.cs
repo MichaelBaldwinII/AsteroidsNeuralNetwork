@@ -78,7 +78,7 @@ namespace Asteroids
 			numPerGen = int.Parse(value);
 		}
 
-		private void Start()
+		public void Restart()
 		{
 			CurrentGenNumber = 1;
 			Index = 0;
